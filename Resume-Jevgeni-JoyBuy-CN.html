@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jevgeni Reusenmann - 供应链与履约运营 | 京东 / Joybuy</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --text: #1a1a1a;
+    --text-light: #555;
+    --text-muted: #888;
+    --border: #e0e0e0;
+    --bg: #ffffff;
+    --bg-alt: #f8f8f8;
+    --accent: #2a2a2a;
+    --accent-light: #444;
+    --max-w: 820px;
+  }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+
+  body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- NAV ---- */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav .inner {
+    max-width: var(--max-w); margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 24px;
+  }
+  nav .name { font-weight: 700; font-size: 1rem; letter-spacing: 0.02em; }
+  nav .links { display: flex; gap: 24px; }
+  nav .links a {
+    text-decoration: none; color: var(--text-light);
+    font-size: 0.85rem; font-weight: 500;
+    transition: color 0.2s;
+  }
+  nav .links a:hover { color: var(--text); }
+
+  /* ---- HERO ---- */
+  .hero {
+    max-width: var(--max-w); margin: 0 auto;
+    padding: 72px 24px 56px;
+  }
+  .hero h1 {
+    font-size: 2.4rem; font-weight: 700; line-height: 1.25;
+    letter-spacing: -0.01em; margin-bottom: 16px;
+  }
+  .hero .subtitle {
+    font-size: 1.1rem; color: var(--text-light);
+    max-width: 640px; margin-bottom: 28px;
+  }
+  .hero .meta {
+    display: flex; flex-wrap: wrap; gap: 8px 20px;
+    font-size: 0.85rem; color: var(--text-muted);
+  }
+  .hero .meta span::before {
+    content: ''; display: inline-block;
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--text-muted); margin-right: 8px;
+    vertical-align: middle; position: relative; top: -1px;
+  }
+  .hero .meta span:first-child::before { display: none; }
+
+  /* ---- SECTION ---- */
+  section {
+    max-width: var(--max-w); margin: 0 auto;
+    padding: 0 24px 56px;
+  }
+  section h2 {
+    font-size: 0.85rem; font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--text-muted); margin-bottom: 28px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--border);
+  }
+
+  /* ---- EXPERIENCE ---- */
+  .role { margin-bottom: 40px; }
+  .role:last-child { margin-bottom: 0; }
+  .role-header {
+    display: flex; justify-content: space-between;
+    align-items: baseline; flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+  .role-header h3 {
+    font-size: 1.05rem; font-weight: 700;
+  }
+  .role-header .dates {
+    font-size: 0.85rem; color: var(--text-muted); font-style: italic;
+  }
+  .role-title {
+    font-size: 0.92rem; font-style: italic;
+    color: var(--text-light); margin-bottom: 12px;
+  }
+  .role-lead {
+    font-size: 0.9rem; color: var(--text-light);
+    line-height: 1.75; margin-bottom: 12px;
+  }
+  .role ul {
+    list-style: none; padding: 0;
+  }
+  .role li {
+    position: relative; padding-left: 16px;
+    font-size: 0.9rem; color: var(--text-light);
+    margin-bottom: 8px; line-height: 1.75;
+  }
+  .role li::before {
+    content: '';
+    position: absolute; left: 0; top: 11px;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--text-muted);
+  }
+
+  /* ---- EDUCATION & CERTS ---- */
+  .edu-item {
+    display: flex; gap: 24px; margin-bottom: 14px;
+    font-size: 0.9rem;
+  }
+  .edu-item .year {
+    min-width: 90px; color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+  .edu-item .school { font-weight: 600; }
+  .edu-item .degree { color: var(--text-light); }
+
+  .cert-list { list-style: none; }
+  .cert-list li {
+    font-size: 0.9rem; color: var(--text-light);
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .cert-list li:last-child { border-bottom: none; }
+
+  /* ---- SKILLS ---- */
+  .skills-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .skill-group h4 {
+    font-size: 0.8rem;
+    letter-spacing: 0.06em; color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .skill-group p {
+    font-size: 0.9rem; color: var(--text-light); line-height: 1.7;
+  }
+
+  /* ---- COVER LETTER ---- */
+  .letter {
+    background: var(--bg-alt);
+    border-radius: 6px; padding: 36px;
+    margin-top: 8px;
+  }
+  .letter p {
+    font-size: 0.92rem; color: var(--text-light);
+    line-height: 1.85; margin-bottom: 16px;
+  }
+  .letter p:last-child { margin-bottom: 0; }
+  .letter .sig {
+    margin-top: 24px; font-weight: 600; color: var(--text);
+  }
+
+  /* ---- CONTACT ---- */
+  .contact-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .contact-item {
+    font-size: 0.9rem;
+  }
+  .contact-item .label {
+    font-size: 0.75rem;
+    letter-spacing: 0.06em; color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .contact-item a {
+    color: var(--text); text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    transition: border-color 0.2s;
+  }
+  .contact-item a:hover { border-color: var(--text); }
+
+  /* ---- FOOTER ---- */
+  footer {
+    max-width: var(--max-w); margin: 0 auto;
+    padding: 32px 24px;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem; color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.8rem; }
+    .hero { padding: 48px 20px 40px; }
+    section { padding: 0 20px 40px; }
+    .role-header { flex-direction: column; }
+    .skills-grid { grid-template-columns: 1fr; }
+    .edu-item { flex-direction: column; gap: 4px; }
+    .letter { padding: 24px; }
+    nav .links { gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <span class="name">Jevgeni Reusenmann</span>
+    <div class="links">
+      <a href="#experience">工作经历</a>
+      <a href="#education">教育背景</a>
+      <a href="#letter">求职信</a>
+      <a href="#contact">联系方式</a>
+    </div>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>供应链与履约运营<br>欧洲电商基础设施建设</h1>
+  <p class="subtitle">10年以上从零搭建物流基础设施的经验，涵盖电子商务、消费电子及精密制造领域。已回到柏林，专注于欧洲供应链基础设施建设。</p>
+  <div class="meta">
+    <span>德国柏林</span>
+    <span>德语（母语）&middot; 英语（母语）</span>
+    <span>供应链管理硕士，波士顿大学</span>
+  </div>
+</div>
+
+<section id="experience">
+  <h2>工作经历</h2>
+
+  <div class="role">
+    <div class="role-header">
+      <h3>DarkChain</h3>
+      <span class="dates">柏林，2025年5月至今</span>
+    </div>
+    <div class="role-title">供应链运营顾问</div>
+    <ul>
+      <li>为4家中型客户审计端到端供应链工作流程，识别采购、仓储分配和需求规划中的手动瓶颈，制定优先级AI自动化路线图，实现约95%的Excel手工作业削减。</li>
+      <li>在n8n平台上设计供应商风险评分引擎，整合来自3个数据源的交货期波动、订单满足率和ESG合规信号，形成单一加权指数，帮助一家客户的采购团队在欧盟CSRD报告截止前标记并替换15家不合规供应商。</li>
+    </ul>
+  </div>
+
+  <div class="role">
+    <div class="role-header">
+      <h3>Amazon（亚马逊）</h3>
+      <span class="dates">纽约，2022年4月 &ndash; 2025年1月</span>
+    </div>
+    <div class="role-title">高级供应链与履约启动经理</div>
+    <ul>
+      <li>主导23家Amazon Fresh新店在5个州的库存准备工作，全权负责端到端入库提升计划，在4至7周窗口期内完成20,000+SKU（涵盖生鲜、冷藏、冷冻和常温品类）的铺货。开业当日实现98%的库存满足率，生鲜损耗比全网平均水平低40%。</li>
+      <li>制定库存准备标准化启动手册（供应商入驻、采购单排序、按品类设置安全库存），将开店前规划时间从12周缩短至6周，使团队从每月1店提升至每周3店的节奏。负责每个门店库存准备的高管Go/No-Go决策。</li>
+      <li>负责所有重大促销活动（Prime Day、节假日、季节性活动）的库存规划，按SKU预测促销需求提升量，与优质供应商协调提前12周预布库存。Prime Day期间主推商品库存满足率达94%（全网基准89%），生鲜损耗率4.8%（目标10%）。</li>
+      <li>构建促销需求预测模型，按品类和门店集群分析历史促销提升幅度。促销缺货率同比下降600个基点，促销后过剩库存减少400个基点，直接改善促销期间利润率。</li>
+      <li>通过系统诊断缺货根因（预测偏差、供应商满足率差距、最小起订量、主数据问题）并将自动纠正措施嵌入采购平台，18个月内将周环比库存满足率从79%提升至94%，生鲜损耗降低800个基点。</li>
+    </ul>
+  </div>
+
+  <div class="role">
+    <div class="role-header">
+      <h3>Amazon（亚马逊）</h3>
+      <span class="dates">西雅图，2021年6月 &ndash; 2022年4月</span>
+    </div>
+    <div class="role-title">供应链经理，当日达配送</div>
+    <ul>
+      <li>负责亚马逊次日达配送网络在美国西海岸设施的每周入库S&amp;OP，规划拖车分配、货物合并和配送时效，在业务量从每周200万件增长至500万件的过程中，通过平衡库存可用性、拖车利用率、里程利用率与单包成本，将每包成本降低$0.09（-120个基点），实现年化节省$300万。</li>
+      <li>通过为每个新节点建立标准化入驻SOP（包括基于需求的体量预测、线路分配和承运商合并规则），将入库规划框架从15个设施扩展至80个设施，且未产生成比例的成本增长。</li>
+    </ul>
+  </div>
+
+  <div class="role">
+    <div class="role-header">
+      <h3>Bose（博士音响）</h3>
+      <span class="dates">波士顿，2019年12月 &ndash; 2021年6月</span>
+    </div>
+    <div class="role-title">全球供应链业务分析师，卓越中心</div>
+    <div class="role-lead">管理覆盖消费电子、军工和航空事业部的30亿美元电子产品组合的端到端S&amp;OP流程和全球库存仓位（900+SKU，11个全球仓库）。</div>
+    <ul>
+      <li>从零搭建供应链卓越中心，作为所有供应规划咨询的唯一信息源。开发KPI框架、情景规划工具和Power BI仪表板，实现自助分析和标准化报告，将预测准确率（WAPE）从38%提升至17%。</li>
+      <li>主导供应规划系统从SAP APO到Kinaxis RapidResponse的端到端迁移（需求感知、库存优化、供应分配）。完成120名跨部门用户的上线培训，将制造规划周期从96小时缩短至24小时，120天内实现完整数据一致性。</li>
+      <li>疫情期间通过重构全球安全库存模型、纠正系统性预测偏差和自动化库存报告，释放7,500万美元营运资金。库存周转天数减少25天，同时维持目标服务水平。通过每周高管级演示向高层汇报供应约束和风险场景。</li>
+    </ul>
+  </div>
+
+  <div class="role">
+    <div class="role-header">
+      <h3>Bose（博士音响）</h3>
+      <span class="dates">波士顿，2018年6月 &ndash; 2019年12月</span>
+    </div>
+    <div class="role-title">全球供需计划员</div>
+    <ul>
+      <li>负责2亿美元电子设备配件产品组合的跨区域生产规划和库存分配。将需求预测转化为可执行的供应计划，与中国、墨西哥和马来西亚的电子制造供应商制定生产策略，推动上游元器件采购订单决策。实现全球零售商98.5%的OTIF交付率。</li>
+      <li>利用高级分析方法优化600+活跃SKU的MRP参数。每周分析实际达成与承诺供应对比计划的差异，周环比降低MAPE 1-3%，全球生产和仓储节点库存持有天数减少15天。将原由8名计划员分别管理的库存预算工作整合为单一自动化框架。</li>
+      <li>确保旗舰产品全生命周期（从NPI到停产）的关键元器件连续供应，通过直接管理一级供应商和主动风险缓解措施，应对高通SoC和PMIC长达40周以上的交货期。主导一项覆盖9个国家的5,000万美元全球返工恢复项目，45天内完成（原计划4个月）。</li>
+    </ul>
+  </div>
+
+  <div class="role">
+    <div class="role-header">
+      <h3>Arburg Inc（阿博格）</h3>
+      <span class="dates">美国康涅狄格州哈特福德，2016年8月 &ndash; 2018年6月</span>
+    </div>
+    <div class="role-title">生产计划经理，美国子公司</div>
+    <ul>
+      <li>全权负责这家德国精密OEM制造商3,000万美元制造部门的生产排程、库存分配和订单履行。管理20人生产团队，协调跨大西洋入库物流（从德国总部发运的海运和空运），维护基于BOM的物料需求计划以确保复杂机械组件的准时交付。</li>
+      <li>通过诊断工作流瓶颈、重新设计ABC分类和实施结构化计划流程，实现月产量3倍增长。在平衡供应与成本约束的同时，将平均客户订单交货周期从6周缩短至3周。</li>
+      <li>担任德国工程总部与美国制造部门之间的运营桥梁，从工程蓝图创建完整的生产流程。开发战略安全库存模型以缓解长交期海运风险，同时管理每周空运补货周期。</li>
+    </ul>
+  </div>
+</section>
+
+<section id="education">
+  <h2>教育背景</h2>
+  <div class="edu-item">
+    <span class="year">2014 &ndash; 2016</span>
+    <div><span class="school">波士顿大学</span><span class="degree"> &mdash; 供应链管理硕士</span></div>
+  </div>
+  <div class="edu-item">
+    <span class="year">2009 &ndash; 2014</span>
+    <div><span class="school">凯泽斯劳滕工业大学</span><span class="degree"> &mdash; 机械工程与工商管理学士</span></div>
+  </div>
+  <div class="edu-item">
+    <span class="year">1999 &ndash; 2008</span>
+    <div><span class="school">菲希特文理中学（哈根）</span><span class="degree"> &mdash; 高中</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>证书与专业技能</h2>
+  <div class="skills-grid">
+    <div class="skill-group">
+      <h4>证书</h4>
+      <ul class="cert-list">
+        <li>精益六西格玛绿带，六西格玛委员会，2024</li>
+        <li>商业分析（预测/描述性统计方法），哈佛商学院，2018</li>
+        <li>SAP ECC / NetWeaver 工作场所认证，2017</li>
+      </ul>
+    </div>
+    <div class="skill-group">
+      <h4>技术能力</h4>
+      <p>SAP S/4HANA（MM、PP、APO、IBP）、Kinaxis RapidResponse、Excel（高级，10年）、SQL、Power BI、Tableau</p>
+      <h4 style="margin-top:16px;">语言能力</h4>
+      <p>英语（母语）、德语（母语）</p>
+    </div>
+  </div>
+</section>
+
+<section id="letter">
+  <h2>求职信 &mdash; 京东 / Joybuy</h2>
+  <div class="letter">
+    <p>在过去十年中，我一直在从零搭建供应链和履约基础设施。先是为一家进入美国市场的德国OEM企业建立供应链体系，随后在Bose负责全球消费电子供应链，最近则主导了23家Amazon Fresh门店在美国12个州的启动工作。2025年，我回到柏林，专注于欧洲物流基础设施建设。Joybuy在德国及更广泛欧盟市场的扩张，依托京东的供应链基因，正是我的经验能够产生最大价值的全新基础设施建设场景。</p>
+    <p>在亚马逊，我负责每家新店的库存准备工作，在压缩的时间窗口内完成20,000+SKU（涵盖生鲜、冷藏、冷冻和常温品类）的铺货。我制定的标准化手册将开店节奏从每月1家提升至每周3家，库存满足率从79%提升至94%，入库规划从15个履约节点扩展至80个，同时单包成本降低120个基点。在Bose，我从零搭建了全球供应链卓越中心，管理覆盖11个仓库的30亿美元产品组合，主导SAP到Kinaxis的系统迁移将计划周期从96小时缩短至24小时，并通过重构安全库存模型在疫情期间释放7,500万美元营运资金。在Arburg，我为一家进入美国市场的德国精密OEM建立了完整的供应链运营体系，协调德国总部与美国子公司之间的跨大西洋物流，实现月产量3倍增长、交货周期缩短一半。每一个岗位都要求在一无所有的环境中搭建系统和流程，并在压力下实现规模化。</p>
+    <p>我的母语是英语和德语，目前常驻柏林。我的工程背景（凯泽斯劳滕工业大学机械工程学士）结合波士顿大学供应链管理硕士，使我具备从第一天起即可贡献的技术基础和运营工具。我希望加入京东德国办公室，帮助搭建将定义Joybuy在欧洲市场地位的履约和物流基础设施。</p>
+    <p class="sig">Jevgeni Reusenmann</p>
+  </div>
+</section>
+
+<section id="contact">
+  <h2>联系方式</h2>
+  <div class="contact-grid">
+    <div class="contact-item">
+      <div class="label">电子邮箱</div>
+      <a href="mailto:j.reusenmann@gmail.com">j.reusenmann@gmail.com</a>
+    </div>
+    <div class="contact-item">
+      <div class="label">电话</div>
+      <a href="tel:+4917681209701">+49 176 812 09701</a>
+    </div>
+    <div class="contact-item">
+      <div class="label">领英</div>
+      <a href="https://linkedin.com/in/jreman" target="_blank">linkedin.com/in/jreman</a>
+    </div>
+    <div class="contact-item">
+      <div class="label">所在地</div>
+      德国柏林
+    </div>
+  </div>
+</section>
+
+<footer>
+  Jevgeni Reusenmann &middot; 柏林 &middot; 2026
+</footer>
+
+</body>
+</html>
