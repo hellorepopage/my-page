@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jevgeni Reusenmann - Supply Chain &amp; Fulfillment Operations | JD.com / Joybuy</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --text: #1a1a1a;
+    --text-light: #555;
+    --text-muted: #888;
+    --border: #e0e0e0;
+    --bg: #ffffff;
+    --bg-alt: #f8f8f8;
+    --accent: #2a2a2a;
+    --accent-light: #444;
+    --max-w: 820px;
+  }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- NAV ---- */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav .inner {
+    max-width: var(--max-w); margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 24px;
+  }
+  nav .name { font-weight: 700; font-size: 1rem; letter-spacing: 0.02em; }
+  nav .links { display: flex; gap: 24px; }
+  nav .links a {
+    text-decoration: none; color: var(--text-light);
+    font-size: 0.85rem; font-weight: 500; letter-spacing: 0.03em;
+    transition: color 0.2s;
+  }
+  nav .links a:hover { color: var(--text); }
+
+  /* ---- HERO ---- */
+  .hero {
+    max-width: var(--max-w); margin: 0 auto;
+    padding: 72px 24px 56px;
+  }
+  .hero h1 {
+    font-size: 2.4rem; font-weight: 700; line-height: 1.15;
+    letter-spacing: -0.02em; margin-bottom: 16px;
+  }
+  .hero .subtitle {
+    font-size: 1.1rem; color: var(--text-light);
+    max-width: 640px; margin-bottom: 28px;
+  }
+  .hero .meta {
+    display: flex; flex-wrap: wrap; gap: 8px 20px;
+    font-size: 0.85rem; color: var(--text-muted);
+  }
+  .hero .meta span::before {
+    content: ''; display: inline-block;
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--text-muted); margin-right: 8px;
+    vertical-align: middle; position: relative; top: -1px;
+  }
+  .hero .meta span:first-child::before { display: none; }
+
+  /* ---- SECTION ---- */
+  section {
+    max-width: var(--max-w); margin: 0 auto;
+    padding: 0 24px 56px;
+  }
+  section h2 {
+    font-size: 0.8rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--text-muted); margin-bottom: 28px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--border);
+  }
+
+  /* ---- EXPERIENCE ---- */
+  .role { margin-bottom: 40px; }
+  .role:last-child { margin-bottom: 0; }
+  .role-header {
+    display: flex; justify-content: space-between;
+    align-items: baseline; flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+  .role-header h3 {
+    font-size: 1.05rem; font-weight: 700;
+  }
+  .role-header .dates {
+    font-size: 0.85rem; color: var(--text-muted); font-style: italic;
+  }
+  .role-title {
+    font-size: 0.92rem; font-style: italic;
+    color: var(--text-light); margin-bottom: 12px;
+  }
+  .role-lead {
+    font-size: 0.9rem; color: var(--text-light);
+    line-height: 1.65; margin-bottom: 12px;
+  }
+  .role ul {
+    list-style: none; padding: 0;
+  }
+  .role li {
+    position: relative; padding-left: 16px;
+    font-size: 0.9rem; color: var(--text-light);
+    margin-bottom: 8px; line-height: 1.65;
+  }
+  .role li::before {
+    content: '';
+    position: absolute; left: 0; top: 9px;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--text-muted);
+  }
+
+  /* ---- EDUCATION & CERTS ---- */
+  .edu-item {
+    display: flex; gap: 24px; margin-bottom: 14px;
+    font-size: 0.9rem;
+  }
+  .edu-item .year {
+    min-width: 90px; color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+  .edu-item .school { font-weight: 600; }
+  .edu-item .degree { color: var(--text-light); }
+
+  .cert-list { list-style: none; }
+  .cert-list li {
+    font-size: 0.9rem; color: var(--text-light);
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .cert-list li:last-child { border-bottom: none; }
+
+  /* ---- SKILLS ---- */
+  .skills-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .skill-group h4 {
+    font-size: 0.8rem; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .skill-group p {
+    font-size: 0.9rem; color: var(--text-light); line-height: 1.6;
+  }
+
+  /* ---- COVER LETTER ---- */
+  .letter {
+    background: var(--bg-alt);
+    border-radius: 6px; padding: 36px;
+    margin-top: 8px;
+  }
+  .letter p {
+    font-size: 0.92rem; color: var(--text-light);
+    line-height: 1.75; margin-bottom: 16px;
+  }
+  .letter p:last-child { margin-bottom: 0; }
+  .letter .sig {
+    margin-top: 24px; font-weight: 600; color: var(--text);
+  }
+
+  /* ---- CONTACT ---- */
+  .contact-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .contact-item {
+    font-size: 0.9rem;
+  }
+  .contact-item .label {
+    font-size: 0.75rem; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .contact-item a {
+    color: var(--text); text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    transition: border-color 0.2s;
+  }
+  .contact-item a:hover { border-color: var(--text); }
+
+  /* ---- FOOTER ---- */
+  footer {
+    max-width: var(--max-w); margin: 0 auto;
+    padding: 32px 24px;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem; color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.8rem; }
+    .hero { padding: 48px 20px 40px; }
+    section { padding: 0 20px 40px; }
+    .role-header { flex-direction: column; }
+    .skills-grid { grid-template-columns: 1fr; }
+    .edu-item { flex-direction: column; gap: 4px; }
+    .letter { padding: 24px; }
+    nav .links { gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <span class="name">Jevgeni Reusenmann</span>
+    <div class="links">
+      <a href="#experience">Experience</a>
+      <a href="#education">Education</a>
+      <a href="#letter">Cover Letter</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Supply Chain &amp; Fulfillment<br>for European E-Commerce</h1>
+  <p class="subtitle">10+ years building logistics infrastructure from scratch across e-commerce, consumer electronics, and precision manufacturing. Moved back to Berlin to build European supply chain infrastructure.</p>
+  <div class="meta">
+    <span>Berlin, Germany</span>
+    <span>German (Native) &middot; English (Native)</span>
+    <span>M.Sc. Supply Chain Management, Boston University</span>
+  </div>
+</div>
+
+<section id="experience">
+  <h2>Professional Experience</h2>
+
+  <div class="role">
+    <div class="role-header">
+      <h3>DarkChain</h3>
+      <span class="dates">Berlin, May 2025 &ndash; Present</span>
+    </div>
+    <div class="role-title">Supply Chain Operations Consultant</div>
+    <ul>
+      <li>Audited end-to-end supply chain workflows for 4 mid-market clients, identified manual bottlenecks across procurement, warehouse allocation, and demand, and built prioritized AI automation roadmaps, unlocking ~95% in Excel work reduction.</li>
+      <li>Designed a supplier risk scoring engine on n8n pulling lead time variability, order fill rates, and ESG compliance signals from 3 data sources into a single weighted index, enabling one client&rsquo;s procurement team to flag and replace 15 non-compliant suppliers ahead of EU CSRD reporting deadlines.</li>
+    </ul>
+  </div>
+
+  <div class="role">
+    <div class="role-header">
+      <h3>Amazon</h3>
+      <span class="dates">New York City, Apr 2022 &ndash; Jan 2025</span>
+    </div>
+    <div class="role-title">Sr. Supply Chain &amp; Fulfillment Launch Manager</div>
+    <ul>
+      <li>Led inventory readiness for 23 new Amazon Fresh store launches across 5 states, owning the end-to-end inbound ramp plan to stock 20K+ SKUs across perishable, chilled, frozen, and ambient categories within 4&ndash;7 week windows. Achieved 98% instock rate on launch day with perishable shrink 40% below network average.</li>
+      <li>Developed standardized launch playbooks for inventory readiness (vendor onboarding, PO sequencing, safety stock positioning by category) that reduced pre-launch planning time from 12 wks to 6 wks and enabled the team to scale from 1 store/month to 3 per week. Owned the executive Go/No-Go decision on inventory readiness for each location.</li>
+      <li>Owned instock planning for all major promotional events (Prime Day, holiday, seasonal campaigns), forecasting promotional demand uplift by SKU and coordinating with premium vendors to pre-position inventory 12 weeks ahead of each event. Maintained 94% instock on featured promotional items during Prime Day vs. 89% network baseline, with 4.8% perishable waste rate (vs. 10% target).</li>
+      <li>Built an event demand forecasting model that analyzed historical promotional lift by category and store cluster. Reduced promotional out-of-stock by 600bps YoY while cutting post-event excess inventory by 400bps, directly improving margin on promotional periods.</li>
+      <li>Drove WoW instock improvement from 79% to 94% and cut perishable waste by 800bps over 18 months by systematically diagnosing root causes of OOS (forecast bias, vendor FR gaps, MOQs, master data) and building automated correctives into the procurement platform.</li>
+    </ul>
+  </div>
+
+  <div class="role">
+    <div class="role-header">
+      <h3>Amazon</h3>
+      <span class="dates">Seattle, Jun 2021 &ndash; Apr 2022</span>
+    </div>
+    <div class="role-title">Supply Chain Manager, Same Day Delivery</div>
+    <ul>
+      <li>Owned weekly inbound S&amp;OP for Amazon&rsquo;s sub-same-day delivery network across West Coast facilities, planning trailer allocation, shipment consolidation, and delivery timing while growing from 2M to 5M units/week. Identified cost drivers while balancing inventory availability, trailer utilization, and mile utilization against cost per package, reducing CPP by $0.09 (&minus;120bps), $3M in annualized savings.</li>
+      <li>Scaled the inbound planning framework from 15 to 80 facilities without proportional cost increase by creating standardized onboarding SOPs for each new node, including demand-based volume forecasts, lane assignments, and carrier consolidation rules.</li>
+    </ul>
+  </div>
+
+  <div class="role">
+    <div class="role-header">
+      <h3>Bose Corporation</h3>
+      <span class="dates">Boston, Dec 2019 &ndash; Jun 2021</span>
+    </div>
+    <div class="role-title">Global Supply Chain Business Analyst, Center of Excellence</div>
+    <div class="role-lead">Governed end-to-end S&amp;OP process and global inventory positions for a $3B electronics portfolio across Consumer, Military, and Aviation divisions (900+ SKUs, 11 global warehouses).</div>
+    <ul>
+      <li>Built the Supply Chain Center of Excellence from the ground up, serving as the single point of truth for all supply planning inquiries. Developed KPI frameworks, scenario-planning tools, and Power BI dashboards that enabled self-service analytics and standardized reporting, improving forecast accuracy (WAPE from 38% to 17%).</li>
+      <li>Led end-to-end migration of supply planning systems from SAP APO to Kinaxis RapidResponse (demand sensing, inventory optimization, supply allocation). Onboarded 120 cross-functional users and reduced the manufacturing planning cycle from 96 hours to 24 hours, achieving full data parity within 120 days.</li>
+      <li>Freed $75M in working capital during the pandemic by re-architecting global safety stock models, correcting systemic forecasting bias, and automating inventory reporting. Reduced DIOH by 25 days while maintaining target service levels. Communicated supply constraints and risk scenarios to senior leadership through weekly executive-ready presentations.</li>
+    </ul>
+  </div>
+
+  <div class="role">
+    <div class="role-header">
+      <h3>Bose Corporation</h3>
+      <span class="dates">Boston, Jun 2018 &ndash; Dec 2019</span>
+    </div>
+    <div class="role-title">Global Supply Demand Planner</div>
+    <ul>
+      <li>Managed production planning and inventory allocation across regions for a $200M portfolio of electronic device accessories. Translated demand forecasts into executable supply plans, set production strategy with electronic manufacturing suppliers in China, Mexico, and Malaysia, and drove component purchase order decisions upstream. Sustained 98.5% OTIF delivery to global retailers.</li>
+      <li>Refined MRP parameters across 600+ active SKUs using advanced analytics. Analyzed attainment and committed supply versus planned as demand inputs changed weekly, reducing MAPE by 1&ndash;3% week over week and cutting inventory hold by 15 DIOH across global production and warehouse hubs. Consolidated inventory budget work from 8 planners into a single automated framework.</li>
+      <li>Secured critical component continuity for flagship products across their full lifecycle (NPI through End of Manufacturing), navigating 40+ week lead times for Qualcomm SoCs and PMICs through direct Tier-1 supplier management and proactive risk mitigation. Led a $50M global rework recovery across 9 countries in 45 days (vs. 4-month plan).</li>
+    </ul>
+  </div>
+
+  <div class="role">
+    <div class="role-header">
+      <h3>Arburg Inc</h3>
+      <span class="dates">Hartford, CT, Aug 2016 &ndash; Jun 2018</span>
+    </div>
+    <div class="role-title">Production Planning Manager, U.S. Subsidiary</div>
+    <ul>
+      <li>Owned production scheduling, inventory allocation, and order fulfillment for a $30M manufacturing department at this German precision OEM. Managed a 20-person production team, coordinated transatlantic inbound logistics (ocean and air freight from German HQ), and maintained BOM-driven material requirements planning to ensure on-time delivery of complex machine assemblies.</li>
+      <li>Achieved a 3x increase in monthly production output by diagnosing workflow bottlenecks, redesigning ABC-classifications, and implementing structured planning processes. Reduced average customer order lead time from 6 weeks to 3 weeks while balancing supply against cost constraints.</li>
+      <li>Served as the operational bridge between German engineering HQ and U.S. manufacturing, creating the entire production process from engineering blueprints. Developed strategic safety stock models to mitigate long-lead ocean freight risks while managing weekly air freight replenishment cycles.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="education">
+  <h2>Education</h2>
+  <div class="edu-item">
+    <span class="year">2014 &ndash; 2016</span>
+    <div><span class="school">Boston University</span><span class="degree"> &mdash; M.Sc. Supply Chain Management</span></div>
+  </div>
+  <div class="edu-item">
+    <span class="year">2009 &ndash; 2014</span>
+    <div><span class="school">Technische Universit&auml;t Kaiserslautern</span><span class="degree"> &mdash; B.Sc. Mechanical Engineering &amp; Business Management</span></div>
+  </div>
+  <div class="edu-item">
+    <span class="year">1999 &ndash; 2008</span>
+    <div><span class="school">Fichte Gymnasium Hagen</span><span class="degree"> &mdash; High School</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>Certificates &amp; Technical Skills</h2>
+  <div class="skills-grid">
+    <div class="skill-group">
+      <h4>Certificates</h4>
+      <ul class="cert-list">
+        <li>Lean Six Sigma Green Belt, Council of Six Sigma, 2024</li>
+        <li>Business Analytics (predictive/descriptive methods), Harvard Business School, 2018</li>
+        <li>SAP ECC / NetWeaver Workplace Certificate, 2017</li>
+      </ul>
+    </div>
+    <div class="skill-group">
+      <h4>Technical</h4>
+      <p>SAP S/4HANA (MM, PP, APO, IBP), Kinaxis RapidResponse, Excel (advanced, 10 yrs), SQL, Power BI, Tableau</p>
+      <h4 style="margin-top:16px;">Languages</h4>
+      <p>English (native), German (native)</p>
+    </div>
+  </div>
+</section>
+
+<section id="letter">
+  <h2>Cover Letter &mdash; JD.com / Joybuy</h2>
+  <div class="letter">
+    <p>I have spent the last decade building supply chain and fulfillment infrastructure from scratch, first for a German OEM entering the US market, then across global electronics at Bose, and most recently launching 23 Amazon Fresh locations across 12 US states. I moved back to Berlin in 2025 specifically to build European logistics infrastructure. Joybuy&rsquo;s expansion across Germany and the broader EU, backed by JD.com&rsquo;s supply chain DNA, is exactly the kind of greenfield buildout where my experience has the most impact.</p>
+    <p>At Amazon, I owned inventory readiness for every new store launch, stocking 20,000+ SKUs across perishable, chilled, frozen, and ambient categories within compressed timelines. I built the playbooks that compressed launch cadence from one store per month to three per week, drove instock from 79% to 94%, and scaled inbound planning from 15 to 80 fulfillment nodes while reducing cost per package by 120bps. At Bose, I built the global Supply Chain Center of Excellence governing a $3B portfolio across 11 warehouses, led the SAP-to-Kinaxis migration that cut planning cycles from 96 hours to 24, and freed $75M in working capital by re-architecting safety stock models during the pandemic. At Arburg, I stood up the entire supply chain operation for a German precision OEM entering the US, coordinating transatlantic logistics between German HQ and the American subsidiary, tripling monthly throughput and halving lead times. Each role required building systems and processes where none existed, then scaling them under pressure.</p>
+    <p>I am native in both English and German, based in Berlin. My engineering background (B.Sc. Mechanical Engineering, TU Kaiserslautern) combined with my M.Sc. in Supply Chain Management from Boston University gives me both the technical foundation and the operational toolkit to contribute from day one. I am looking for a role in JD.com&rsquo;s German office where I can help build the fulfillment and logistics infrastructure that will define Joybuy&rsquo;s presence in this market.</p>
+    <p class="sig">Jevgeni Reusenmann</p>
+  </div>
+</section>
+
+<section id="contact">
+  <h2>Contact</h2>
+  <div class="contact-grid">
+    <div class="contact-item">
+      <div class="label">Email</div>
+      <a href="mailto:j.reusenmann@gmail.com">j.reusenmann@gmail.com</a>
+    </div>
+    <div class="contact-item">
+      <div class="label">Phone</div>
+      <a href="tel:+4917681209701">+49 176 812 09701</a>
+    </div>
+    <div class="contact-item">
+      <div class="label">LinkedIn</div>
+      <a href="https://linkedin.com/in/jreman" target="_blank">linkedin.com/in/jreman</a>
+    </div>
+    <div class="contact-item">
+      <div class="label">Location</div>
+      Berlin, Germany
+    </div>
+  </div>
+</section>
+
+<footer>
+  Jevgeni Reusenmann &middot; Berlin &middot; 2026
+</footer>
+
+</body>
+</html>
