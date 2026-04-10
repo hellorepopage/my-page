@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lcars BOM | Engineering Change → Procurement Gap Detector</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#030712;--card:#111827;--border:#1f2937;--border2:#374151;--text:#f3f4f6;--muted:#6b7280;--indigo:#6366f1;--violet:#8b5cf6;--emerald:#10b981;--amber:#f59e0b;--rose:#ef4444;--cyan:#22d3ee;--sky:#0ea5e9;}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;}
+.app{display:flex;height:100vh;overflow:hidden;}
+
+/* Sidebar */
+.sb{width:260px;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.sb-h{padding:18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.sb-logo{width:40px;height:40px;background:linear-gradient(135deg,#ef4444,#f59e0b);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:17px;}
+.sb-t{font-weight:700;font-size:15px;}
+.sb-s{font-size:10px;color:var(--muted);}
+.sb-nav{flex:1;padding:10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;}
+.sb-sec{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:12px 12px 6px;}
+.nb{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:none;cursor:pointer;font-size:13px;background:transparent;color:#9ca3af;transition:all .15s;text-align:left;font-family:inherit;}
+.nb:hover{background:var(--border);color:#e5e7eb;}
+.nb.act{background:rgba(239,68,68,.12);color:#f87171;font-weight:500;}
+.nb-icon{width:16px;text-align:center;}
+.sb-f{padding:14px 18px;border-top:1px solid var(--border);font-size:10px;color:var(--muted);line-height:1.5;}
+
+/* Main */
+.mn{flex:1;overflow-y:auto;background:var(--bg);}
+.ct{padding:24px;max-width:1320px;margin:0 auto;}
+.pt{font-size:22px;font-weight:700;margin-bottom:4px;}
+.ps{font-size:13px;color:var(--muted);margin-bottom:22px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:16px;}
+.card-t{font-size:13px;font-weight:600;margin-bottom:14px;color:#e5e7eb;display:flex;align-items:center;justify-content:space-between;}
+.card-s{font-size:11px;color:var(--muted);margin-top:-8px;margin-bottom:12px;}
+
+/* Metrics */
+.mets{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.met{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;position:relative;}
+.met.alert{border-color:rgba(239,68,68,.3);background:linear-gradient(135deg,rgba(239,68,68,.08),var(--card));}
+.met-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.met-v{font-size:22px;font-weight:700;}
+.met-s{font-size:11px;color:var(--muted);margin-top:3px;}
+.met-i{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;float:right;}
+.mi-r{background:rgba(239,68,68,.15);}.mi-a{background:rgba(245,158,11,.15);}.mi-e{background:rgba(16,185,129,.15);}.mi-i{background:rgba(99,102,241,.15);}.mi-v{background:rgba(139,92,246,.15);}
+
+/* Grid */
+.row{display:grid;gap:16px;margin-bottom:16px;}
+.c2{grid-template-columns:1fr 1fr;}
+.c31{grid-template-columns:2fr 1fr;}
+.c13{grid-template-columns:1fr 2fr;}
+.cw{position:relative;height:260px;}
+
+/* Tables */
+.tw{overflow-x:auto;}
+table{width:100%;font-size:12px;border-collapse:collapse;}
+th{text-align:left;padding:9px 10px;color:var(--muted);font-weight:500;border-bottom:1px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:.5px;}
+th.r{text-align:right;}th.c{text-align:center;}
+td{padding:10px;border-bottom:1px solid rgba(31,41,55,.4);vertical-align:middle;}
+td.r{text-align:right;}td.c{text-align:center;}
+tr:hover td{background:rgba(31,41,55,.25);}
+.fw{font-weight:600;}
+.mono{font-family:'SF Mono','Monaco','Menlo',monospace;font-size:11px;}
+
+/* Badges */
+.b{display:inline-block;padding:3px 9px;border-radius:6px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
+.bg{background:rgba(16,185,129,.15);color:#34d399;}
+.ba{background:rgba(245,158,11,.15);color:#fbbf24;}
+.br{background:rgba(239,68,68,.15);color:#f87171;}
+.bi{background:rgba(99,102,241,.15);color:#818cf8;}
+.bv{background:rgba(139,92,246,.15);color:#a78bfa;}
+.bgy{background:rgba(107,114,128,.2);color:#9ca3af;}
+
+/* Status colors */
+.tg{color:#34d399;}.ta{color:#fbbf24;}.tr{color:#f87171;}.tm{color:#9ca3af;}.ti{color:#818cf8;}
+
+/* Alert row */
+tr.orphan td{background:rgba(239,68,68,.04);}
+tr.orphan:hover td{background:rgba(239,68,68,.08);}
+tr.urgent td{background:rgba(239,68,68,.08);border-left:3px solid #ef4444;}
+
+/* BOM change card */
+.change-card{background:rgba(31,41,55,.3);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-bottom:10px;}
+.change-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.change-title{font-size:13px;font-weight:600;}
+.change-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.diff-list{display:flex;flex-direction:column;gap:4px;margin-top:10px;font-size:11px;font-family:'SF Mono','Monaco',monospace;}
+.diff-add{color:#34d399;}
+.diff-rem{color:#f87171;}
+.diff-chg{color:#fbbf24;}
+.diff-ico{display:inline-block;width:14px;font-weight:700;}
+
+/* Action link */
+.act-link{color:#f87171;font-size:11px;font-weight:500;cursor:pointer;}
+.act-link:hover{text-decoration:underline;}
+
+/* Filters */
+.filters{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.filter-btn{background:var(--border);border:1px solid var(--border2);border-radius:6px;padding:6px 12px;font-size:11px;color:#9ca3af;cursor:pointer;font-family:inherit;}
+.filter-btn.act{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:#f87171;}
+.filter-btn:hover{border-color:var(--indigo);}
+.search-box{flex:1;min-width:200px;background:var(--border);border:1px solid var(--border2);border-radius:6px;padding:6px 12px;font-size:12px;color:#e5e7eb;font-family:inherit;outline:none;}
+.search-box:focus{border-color:var(--indigo);}
+
+/* Banner */
+.banner{background:linear-gradient(90deg,rgba(239,68,68,.15),rgba(239,68,68,.05));border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:14px;}
+.banner-ico{font-size:22px;}
+.banner-t{font-size:13px;font-weight:600;color:#f87171;}
+.banner-s{font-size:11px;color:#fca5a5;margin-top:2px;}
+
+/* Empty state */
+.empty{text-align:center;padding:40px 20px;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sb">
+    <div class="sb-h">
+      <div class="sb-logo">BG</div>
+      <div>
+        <div class="sb-t">Lcars BOM</div>
+        <div class="sb-s">Engineering Change → Procurement Gap Detector</div>
+      </div>
+    </div>
+    <div class="sb-nav" id="nav"></div>
+    <div class="sb-f">
+      <div style="color:#6b7280;">DATA SCOURCE</div>
+      <div style="margin-top:4px;">bom-revisions.csv</div>
+      <div>inventory-pos.csv</div>
+      <div>build-plan.csv</div>
+    </div>
+  </aside>
+  <main class="mn">
+    <div class="ct" id="content"></div>
+  </main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+// LCARS BOM — Standalone prototype for detecting orphaned inventory
+// after engineering BOM changes. Single-purpose tool.
+// ═══════════════════════════════════════════════════════════════════════
+
+var VIEWS=[
+  {id:"dashboard",label:"Dashboard",icon:"\u{1F3AF}"},
+  {id:"orphans",label:"Orphan Watchlist",icon:"\u{1F6A8}"},
+  {id:"changes",label:"BOM Change Log",icon:"\u{1F4DD}"},
+  {id:"parts",label:"Part Explorer",icon:"\u{1F50D}"},
+];
+var view="dashboard";
+var orphanFilter="all";
+var searchTerm="";
+var CI={};
+
+// ───────────────────────────────────────────────────────────────────────
+// SAMPLE DATA — in production this would come from BOM/inventory/PO CSVs
+// ───────────────────────────────────────────────────────────────────────
+
+var TODAY=new Date("2026-04-10");
+
+var PARTS={
+  "IC-STM32H7":{desc:"STM32H7 Microcontroller",cat:"Semiconductor",cost:45.00,vendor:"Rutronik",lead:84},
+  "IC-STM32F4":{desc:"STM32F4 Microcontroller",cat:"Semiconductor",cost:18.50,vendor:"Rutronik",lead:56},
+  "MCU-RPI-CM4":{desc:"Raspberry Pi CM4 8GB",cat:"Module",cost:95.00,vendor:"reichelt elektronik",lead:56},
+  "FPGA-ART7-35T":{desc:"Artix-7 FPGA 35T",cat:"Semiconductor",cost:112.00,vendor:"EBV Elektronik",lead:120},
+  "CAP-22UF-CER":{desc:"22uF Ceramic Cap 25V",cat:"Passive",cost:0.35,vendor:"Bürklin",lead:14},
+  "CAP-10UF-TANT":{desc:"10uF Tantalum Cap 16V",cat:"Passive",cost:1.20,vendor:"Bürklin",lead:21},
+  "RES-10K-1P":{desc:"10k Resistor 1% 0603",cat:"Passive",cost:0.02,vendor:"Bürklin",lead:7},
+  "CONN-MIL-12P":{desc:"MIL-DTL 12-pin Connector",cat:"Connector",cost:85.00,vendor:"Phoenix Contact",lead:112},
+  "CONN-USB-C":{desc:"USB-C Receptacle",cat:"Connector",cost:3.50,vendor:"HARTING",lead:28},
+  "CONN-DB9-M":{desc:"DB9 Male Connector",cat:"Connector",cost:2.80,vendor:"HARTING",lead:21},
+  "PCB-SENSOR-V2":{desc:"Sensor Board PCB Rev2",cat:"PCB",cost:320.00,vendor:"Würth Elektronik",lead:28},
+  "PCB-COMPUTE-V1":{desc:"Compute Board PCB Rev1",cat:"PCB",cost:475.00,vendor:"Würth Elektronik",lead:28},
+  "PCB-PDU-V1":{desc:"PDU Board PCB Rev1",cat:"PCB",cost:280.00,vendor:"Würth Elektronik",lead:28},
+  "BATT-18650-LI":{desc:"18650 Li-Ion 3500mAh",cat:"Battery",cost:12.00,vendor:"VARTA",lead:42},
+  "ANT-915-WHIP":{desc:"915MHz Whip Antenna",cat:"RF",cost:22.00,vendor:"Kathrein",lead:21},
+  "ANT-GPS-ACTIVE":{desc:"Active GPS Antenna",cat:"RF",cost:14.50,vendor:"Telegärtner",lead:28},
+  "LDO-3V3-1A":{desc:"3.3V LDO 1A",cat:"Power",cost:2.10,vendor:"Rutronik",lead:28},
+  "DCDC-5V-3A":{desc:"5V Buck Regulator 3A",cat:"Power",cost:8.50,vendor:"Rutronik",lead:35},
+  "SENSOR-IMU-9DOF":{desc:"9-DOF IMU BNO085",cat:"Sensor",cost:28.00,vendor:"Bosch Sensortec",lead:21},
+  "SENSOR-BARO":{desc:"Barometric Pressure Sensor",cat:"Sensor",cost:6.80,vendor:"Bürklin",lead:14},
+  "CAM-IMX219":{desc:"IMX219 Camera Module",cat:"Sensor",cost:24.00,vendor:"reichelt elektronik",lead:28},
+  "HEAT-ALU-40":{desc:"40mm Aluminum Heatsink",cat:"Mechanical",cost:4.20,vendor:"Fischer Elektronik",lead:7},
+  "FAN-40-12V":{desc:"40mm 12V Fan",cat:"Mechanical",cost:6.50,vendor:"Fischer Elektronik",lead:14},
+  "SCREW-M3-STS":{desc:"M3x8 Stainless Screw",cat:"Hardware",cost:0.08,vendor:"Fischer Elektronik",lead:7},
+};
+
+var PROJECTS={
+  "P001":{name:"Autonomous Sensor Array",pm:"J. Park",buildRate:5,currentRev:"2.2"},
+  "P002":{name:"Edge Compute Module",pm:"R. Chen",buildRate:10,currentRev:"1.4"},
+  "P003":{name:"Power Distribution Unit",pm:"S. Mendez",buildRate:8,currentRev:"1.0"},
+  "P004":{name:"Comms Relay Prototype",pm:"A. Whitfield",buildRate:3,currentRev:"1.1"},
+};
+
+// BOM revisions — each row: project, revision, status, date, engineer, parts{partId:qty}, eco, reason
+var BOM_REVS=[
+  {proj:"P001",rev:"2.0",status:"archived",date:"2026-02-01",eng:"J. Park",eco:"ECO-0341",reason:"Initial build configuration",parts:{
+    "IC-STM32H7":1,"CAP-22UF-CER":10,"RES-10K-1P":20,"CONN-MIL-12P":2,"PCB-SENSOR-V2":1,"ANT-915-WHIP":1,"LDO-3V3-1A":2,"SENSOR-IMU-9DOF":1
+  }},
+  {proj:"P001",rev:"2.1",status:"archived",date:"2026-03-10",eng:"J. Park",eco:"ECO-0358",reason:"Diversity antenna for reliability",parts:{
+    "IC-STM32H7":1,"CAP-22UF-CER":10,"RES-10K-1P":20,"CONN-MIL-12P":2,"PCB-SENSOR-V2":1,"ANT-915-WHIP":2,"LDO-3V3-1A":2,"SENSOR-IMU-9DOF":1
+  }},
+  {proj:"P001",rev:"2.2",status:"active",date:"2026-04-02",eng:"J. Park",eco:"ECO-0374",reason:"MCU upgrade for compute headroom + power mod",parts:{
+    "MCU-RPI-CM4":1,"CAP-22UF-CER":20,"RES-10K-1P":20,"CONN-MIL-12P":2,"PCB-SENSOR-V2":1,"ANT-915-WHIP":2,"LDO-3V3-1A":2,"SENSOR-IMU-9DOF":1,"BATT-18650-LI":4
+  }},
+  {proj:"P002",rev:"1.3",status:"archived",date:"2026-03-15",eng:"R. Chen",eco:"ECO-0362",reason:"Initial compute module",parts:{
+    "MCU-RPI-CM4":1,"PCB-COMPUTE-V1":1,"CONN-USB-C":2,"DCDC-5V-3A":1,"CAP-10UF-TANT":8,"RES-10K-1P":15,"HEAT-ALU-40":1,"FAN-40-12V":1
+  }},
+  {proj:"P002",rev:"1.4",status:"active",date:"2026-04-05",eng:"R. Chen",eco:"ECO-0378",reason:"Passive cooling + FPGA coprocessor + onboard camera",parts:{
+    "MCU-RPI-CM4":1,"PCB-COMPUTE-V1":1,"CONN-USB-C":2,"DCDC-5V-3A":1,"CAP-10UF-TANT":8,"RES-10K-1P":15,"FPGA-ART7-35T":1,"CAM-IMX219":1
+  }},
+  {proj:"P003",rev:"0.9",status:"archived",date:"2026-02-20",eng:"S. Mendez",eco:"ECO-0349",reason:"Prototype PDU",parts:{
+    "PCB-PDU-V1":1,"DCDC-5V-3A":3,"CAP-22UF-CER":15,"RES-10K-1P":10,"CONN-DB9-M":4,"SCREW-M3-STS":12
+  }},
+  {proj:"P003",rev:"1.0",status:"active",date:"2026-04-08",eng:"S. Mendez",eco:"ECO-0381",reason:"Standardize on USB-C interface across platform",parts:{
+    "PCB-PDU-V1":1,"DCDC-5V-3A":3,"CAP-22UF-CER":15,"RES-10K-1P":10,"CONN-USB-C":2,"SCREW-M3-STS":12
+  }},
+  {proj:"P004",rev:"1.1",status:"active",date:"2026-03-20",eng:"A. Whitfield",eco:"ECO-0366",reason:"Initial comms relay build",parts:{
+    "IC-STM32F4":1,"PCB-SENSOR-V2":1,"CAP-22UF-CER":6,"RES-10K-1P":12,"ANT-915-WHIP":1,"ANT-GPS-ACTIVE":1,"LDO-3V3-1A":1,"SENSOR-BARO":1
+  }},
+];
+
+// Open Purchase Orders — in-flight, not yet received
+var OPEN_POS=[
+  {po:"PO-24-0278",part:"IC-STM32H7",qty:100,vendor:"Rutronik",eta:"2026-04-29",ordered:"2026-02-05",buyer:"M. Okonkwo"},
+  {po:"PO-24-0281",part:"CAP-22UF-CER",qty:2000,vendor:"Bürklin",eta:"2026-04-22",ordered:"2026-03-22",buyer:"M. Okonkwo"},
+  {po:"PO-24-0285",part:"CONN-MIL-12P",qty:50,vendor:"Phoenix Contact",eta:"2026-06-15",ordered:"2026-02-25",buyer:"T. Nakamura"},
+  {po:"PO-24-0289",part:"MCU-RPI-CM4",qty:60,vendor:"reichelt elektronik",eta:"2026-05-10",ordered:"2026-03-15",buyer:"M. Okonkwo"},
+  {po:"PO-24-0291",part:"CONN-DB9-M",qty:75,vendor:"HARTING",eta:"2026-04-24",ordered:"2026-03-20",buyer:"T. Nakamura"},
+  {po:"PO-24-0294",part:"PCB-COMPUTE-V1",qty:30,vendor:"Würth Elektronik",eta:"2026-05-05",ordered:"2026-04-01",buyer:"M. Okonkwo"},
+  {po:"PO-24-0296",part:"HEAT-ALU-40",qty:40,vendor:"Fischer Elektronik",eta:"2026-04-18",ordered:"2026-03-28",buyer:"T. Nakamura"},
+  {po:"PO-24-0298",part:"FAN-40-12V",qty:30,vendor:"Fischer Elektronik",eta:"2026-04-20",ordered:"2026-03-30",buyer:"T. Nakamura"},
+  {po:"PO-24-0301",part:"FPGA-ART7-35T",qty:35,vendor:"EBV Elektronik",eta:"2026-07-25",ordered:"2026-04-06",buyer:"M. Okonkwo"},
+  {po:"PO-24-0303",part:"BATT-18650-LI",qty:80,vendor:"VARTA",eta:"2026-05-18",ordered:"2026-04-05",buyer:"T. Nakamura"},
+  {po:"PO-24-0305",part:"CAM-IMX219",qty:40,vendor:"reichelt elektronik",eta:"2026-05-05",ordered:"2026-04-06",buyer:"M. Okonkwo"},
+  {po:"PO-24-0308",part:"IC-STM32H7",qty:50,vendor:"Bürklin",eta:"2026-05-02",ordered:"2026-03-01",buyer:"T. Nakamura"},
+  {po:"PO-24-0310",part:"LDO-3V3-1A",qty:200,vendor:"Rutronik",eta:"2026-05-07",ordered:"2026-04-07",buyer:"M. Okonkwo"},
+  {po:"PO-24-0312",part:"ANT-915-WHIP",qty:60,vendor:"Kathrein",eta:"2026-04-30",ordered:"2026-04-08",buyer:"T. Nakamura"},
+  {po:"PO-24-0315",part:"DCDC-5V-3A",qty:100,vendor:"Rutronik",eta:"2026-05-12",ordered:"2026-04-09",buyer:"M. Okonkwo"},
+];
+
+// ───────────────────────────────────────────────────────────────────────
+// CORE LOGIC — Compute demand from active BOMs, classify orphans
+// ───────────────────────────────────────────────────────────────────────
+
+var PLANNING_HORIZON_MONTHS=3;
+
+function computeDemand(){
+  var demand={};
+  Object.keys(PARTS).forEach(function(p){demand[p]={total:0,sources:[]};});
+  BOM_REVS.filter(function(r){return r.status==="active";}).forEach(function(rev){
+    var proj=PROJECTS[rev.proj];
+    Object.keys(rev.parts).forEach(function(p){
+      var qtyPer=rev.parts[p];
+      var req=qtyPer*proj.buildRate*PLANNING_HORIZON_MONTHS;
+      if(!demand[p]) demand[p]={total:0,sources:[]};
+      demand[p].total+=req;
+      demand[p].sources.push({proj:rev.proj,rev:rev.rev,qtyPer:qtyPer,req:req});
+    });
+  });
+  return demand;
+}
+
+function classifyPOs(){
+  var demand=computeDemand();
+  return OPEN_POS.map(function(po){
+    var part=PARTS[po.part];
+    var d=demand[po.part]||{total:0,sources:[]};
+    var value=po.qty*part.cost;
+    var etaDate=new Date(po.eta);
+    var daysLeft=Math.round((etaDate-TODAY)/86400000);
+    var daysSinceOrdered=Math.round((TODAY-new Date(po.ordered))/86400000);
+    var status="healthy";
+    var orphanCause=null;
+    if(d.total===0){
+      status="orphan";
+      // Find which BOM rev removed this part
+      var recent=BOM_REVS.filter(function(r){return r.status==="archived"&&r.parts[po.part];}).sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+      if(recent.length){
+        var lastArchived=recent[0];
+        var activeRev=BOM_REVS.find(function(r){return r.proj===lastArchived.proj&&r.status==="active";});
+        if(activeRev){
+          // Earliest rev in this project that contained the part
+          var projRevsWithPart=BOM_REVS.filter(function(r){return r.proj===lastArchived.proj&&r.parts[po.part];}).sort(function(a,b){return new Date(a.date)-new Date(b.date);});
+          var introducedDate=projRevsWithPart.length?projRevsWithPart[0].date:lastArchived.date;
+          var removedDate=activeRev.date;
+          var daysInBOM=Math.round((new Date(removedDate)-new Date(introducedDate))/86400000);
+          orphanCause={proj:lastArchived.proj,oldRev:lastArchived.rev,newRev:activeRev.rev,eco:activeRev.eco,reason:activeRev.reason,date:activeRev.date,introducedDate:introducedDate,removedDate:removedDate,daysInBOM:daysInBOM};
+        }
+      }
+    }
+    return {po:po,part:part,partId:po.part,value:value,daysLeft:daysLeft,daysSinceOrdered:daysSinceOrdered,status:status,demand:d,cause:orphanCause};
+  });
+}
+
+function computeBomDiffs(){
+  // For each project, compute diff between each archived rev and the next
+  var diffs=[];
+  Object.keys(PROJECTS).forEach(function(pid){
+    var projRevs=BOM_REVS.filter(function(r){return r.proj===pid;}).sort(function(a,b){return new Date(a.date)-new Date(b.date);});
+    for(var i=1;i<projRevs.length;i++){
+      var prev=projRevs[i-1],cur=projRevs[i];
+      var added=[],removed=[],changed=[];
+      Object.keys(cur.parts).forEach(function(p){
+        if(!prev.parts[p]) added.push({p:p,q:cur.parts[p]});
+        else if(prev.parts[p]!==cur.parts[p]) changed.push({p:p,old:prev.parts[p],nw:cur.parts[p]});
+      });
+      Object.keys(prev.parts).forEach(function(p){
+        if(!cur.parts[p]) removed.push({p:p,q:prev.parts[p]});
+      });
+      diffs.push({proj:pid,from:prev.rev,to:cur.rev,date:cur.date,eng:cur.eng,eco:cur.eco,reason:cur.reason,added:added,removed:removed,changed:changed,status:cur.status});
+    }
+  });
+  return diffs.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+}
+
+// ───────────────────────────────────────────────────────────────────────
+// HELPERS
+// ───────────────────────────────────────────────────────────────────────
+
+function fmt(n){return n.toLocaleString('en-US');}
+function fmtMoney(n){return "$"+n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});}
+function fmtMoney2(n){return "$"+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+function dateShort(s){var d=new Date(s);return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+function dateLong(s){var d=new Date(s);return d.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});}
+
+function destroyCharts(){Object.keys(CI).forEach(function(k){try{CI[k].destroy();}catch(e){}});CI={};}
+
+function mHTML(l,v,s,ico,cls,alert){
+  return '<div class="met'+(alert?' alert':'')+'"><div class="met-i mi-'+cls+'">'+ico+'</div><div class="met-l">'+l+'</div><div class="met-v">'+v+'</div><div class="met-s">'+s+'</div></div>';
+}
+
+// ───────────────────────────────────────────────────────────────────────
+// VIEWS
+// ───────────────────────────────────────────────────────────────────────
+
+function renderDashboard(){
+  var classified=classifyPOs();
+  var orphans=classified.filter(function(c){return c.status==="orphan";});
+  var totalExposure=orphans.reduce(function(a,c){return a+c.value;},0);
+  var earliestDays=orphans.length?Math.min.apply(null,orphans.map(function(o){return o.daysLeft;})):null;
+  var diffs=computeBomDiffs();
+  var recentChanges=diffs.filter(function(d){
+    var days=Math.round((TODAY-new Date(d.date))/86400000);return days<=60;
+  });
+
+  // Urgent orphans (sorted by days left)
+  var urgent=orphans.slice().sort(function(a,b){return a.daysLeft-b.daysLeft;}).slice(0,5);
+
+  // Exposure by vendor
+  var vendorMap={};
+  orphans.forEach(function(o){
+    if(!vendorMap[o.po.vendor]) vendorMap[o.po.vendor]=0;
+    vendorMap[o.po.vendor]+=o.value;
+  });
+  var vendors=Object.keys(vendorMap);
+  var vendorVals=vendors.map(function(v){return vendorMap[v];});
+
+  // Exposure by project (who caused it)
+  var projMap={};
+  orphans.forEach(function(o){
+    var pid=o.cause&&o.cause.proj?o.cause.proj:"Unknown";
+    var label=pid==="Unknown"?"Unknown":(pid+" "+PROJECTS[pid].name);
+    if(!projMap[label]){projMap[label]={val:0,count:0,pm:pid!=="Unknown"?PROJECTS[pid].pm:"—"};}
+    projMap[label].val+=o.value;
+    projMap[label].count+=1;
+  });
+  var projLabelsAll=Object.keys(projMap).sort(function(a,b){return projMap[b].val-projMap[a].val;});
+  var projVals=projLabelsAll.map(function(l){return projMap[l].val;});
+
+  var html='<h1 class="pt">Dashboard</h1><p class="ps">BOM change impact on incoming purchase orders — last computed '+dateLong(TODAY.toISOString())+'</p>';
+
+  if(orphans.length){
+    html+='<div class="banner"><div class="banner-ico">\u26A0\uFE0F</div><div><div class="banner-t">'+orphans.length+' open purchase orders are orphaned by recent BOM changes</div><div class="banner-s">Total exposure: '+fmtMoney(totalExposure)+' \u2014 these parts are en route but no active BOM needs them</div></div></div>';
+  }
+
+  html+='<div class="mets">'+
+    mHTML("Orphan Exposure",fmtMoney(totalExposure),orphans.length+" open POs affected","\u{1F4B8}","r",true)+
+    mHTML("Orphaned POs",orphans.length+"",Math.round(orphans.length/classified.length*100)+"% of all open POs","\u{1F6A8}","a")+
+    mHTML("Earliest Arrival",earliestDays!==null?earliestDays+" days":"—","until first orphaned shipment","\u23F1\uFE0F","i")+
+    mHTML("BOM Changes",recentChanges.length+"",(recentChanges.length>0?"in last 60 days":"none recently"),"\u{1F4DD}","v")+
+  '</div>';
+
+  // Urgent orphans table
+  html+='<div class="card"><div class="card-t">\u{1F6A8} Urgent \u2014 Arriving Soon</div>';
+  if(urgent.length){
+    html+='<div class="tw"><table><thead><tr>'+
+      '<th>Part</th><th>PO #</th><th>Vendor</th><th class="r">Qty</th><th class="r">Value</th><th class="c">ETA</th><th class="c">Days Left</th><th class="c">On PO</th><th>Caused By</th>'+
+      '</tr></thead><tbody>';
+    urgent.forEach(function(o){
+      var urgentClass=o.daysLeft<=14?"urgent":"orphan";
+      var daysColor=o.daysLeft<=7?"tr":o.daysLeft<=21?"ta":"tm";
+      var cause=o.cause?o.cause.eco+' ('+o.cause.oldRev+'\u2192'+o.cause.newRev+')':'—';
+      html+='<tr class="'+urgentClass+'">'+
+        '<td class="fw mono">'+o.partId+'</td>'+
+        '<td class="mono">'+o.po.po+'</td>'+
+        '<td>'+o.po.vendor+'</td>'+
+        '<td class="r">'+fmt(o.po.qty)+'</td>'+
+        '<td class="r fw tr">'+fmtMoney(o.value)+'</td>'+
+        '<td class="c">'+dateShort(o.po.eta)+'</td>'+
+        '<td class="c fw '+daysColor+'">'+o.daysLeft+'d</td>'+
+        '<td class="c tm">'+o.daysSinceOrdered+'d</td>'+
+        '<td class="mono tm">'+cause+'</td>'+
+      '</tr>';
+    });
+    html+='</tbody></table></div>';
+  }else{
+    html+='<div class="empty">No urgent orphans — all incoming POs are healthy \u2705</div>';
+  }
+  html+='</div>';
+
+  html+='<div class="row c2">'+
+    '<div class="card"><div class="card-t">Orphan Exposure by Vendor <span class="tm" style="font-weight:400;font-size:11px">— who to call</span></div><div class="cw"><canvas id="c1"></canvas></div></div>'+
+    '<div class="card"><div class="card-t">Orphan Exposure by Project <span class="tm" style="font-weight:400;font-size:11px">— which change caused it</span></div><div class="cw"><canvas id="c2"></canvas></div></div>'+
+  '</div>';
+
+  // Recent changes feed
+  html+='<div class="card"><div class="card-t">Recent BOM Changes</div>';
+  if(recentChanges.length){
+    recentChanges.slice(0,4).forEach(function(d){
+      var proj=PROJECTS[d.proj];
+      html+='<div class="change-card"><div class="change-head"><div>'+
+        '<div class="change-title">'+proj.name+' \u2014 Rev '+d.from+' \u2192 Rev '+d.to+' <span class="b '+(d.status==="active"?"bg":"bgy")+'">'+(d.status==="active"?"ACTIVE":"ARCHIVED")+'</span></div>'+
+        '<div class="change-meta">'+d.eco+' \u00B7 '+d.eng+' \u00B7 '+dateLong(d.date)+' \u00B7 "'+d.reason+'"</div>'+
+      '</div></div>';
+      html+='<div class="diff-list">';
+      d.added.forEach(function(a){html+='<div class="diff-add"><span class="diff-ico">+</span>ADD '+a.p+' (qty '+a.q+')</div>';});
+      d.removed.forEach(function(r){html+='<div class="diff-rem"><span class="diff-ico">\u2212</span>REMOVE '+r.p+' (was qty '+r.q+')</div>';});
+      d.changed.forEach(function(c){html+='<div class="diff-chg"><span class="diff-ico">~</span>CHANGE '+c.p+' qty '+c.old+' \u2192 '+c.nw+'</div>';});
+      html+='</div></div>';
+    });
+  }else{
+    html+='<div class="empty">No recent BOM changes</div>';
+  }
+  html+='</div>';
+
+  document.getElementById("content").innerHTML=html;
+
+  // Vendor exposure chart
+  var colors=["#ef4444","#f59e0b","#8b5cf6","#22d3ee","#6366f1","#10b981"];
+  CI.c1=new Chart(document.getElementById("c1"),{type:"bar",data:{labels:vendors,datasets:[{data:vendorVals,backgroundColor:colors.slice(0,vendors.length),borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:"#1f2937"},ticks:{color:"#9ca3af",callback:function(v){return "$"+v;}}},y:{grid:{display:false},ticks:{color:"#9ca3af",font:{size:10}}}}}});
+
+  // Orphan exposure by project (who caused it)
+  var projColors=["#ef4444","#f59e0b","#8b5cf6","#22d3ee","#6366f1","#10b981"];
+  CI.c2=new Chart(document.getElementById("c2"),{type:"bar",data:{labels:projLabelsAll,datasets:[{data:projVals,backgroundColor:projColors.slice(0,projLabelsAll.length),borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){var lbl=ctx.label;var pm=projMap[lbl]?projMap[lbl].pm:"";var cnt=projMap[lbl]?projMap[lbl].count:0;return " $"+ctx.parsed.x.toLocaleString()+"  ("+cnt+" PO"+(cnt!==1?"s":"")+", PM: "+pm+")";}}}},scales:{x:{grid:{color:"#1f2937"},ticks:{color:"#9ca3af",callback:function(v){return "$"+v;}}},y:{grid:{display:false},ticks:{color:"#9ca3af",font:{size:10}}}}}});
+}
+
+function renderOrphans(){
+  var classified=classifyPOs();
+  var orphans=classified.filter(function(c){return c.status==="orphan";});
+  var totalExposure=orphans.reduce(function(a,c){return a+c.value;},0);
+
+  // Apply filter
+  var filtered=orphans.slice();
+  if(orphanFilter==="urgent") filtered=filtered.filter(function(o){return o.daysLeft<=14;});
+  else if(orphanFilter==="highval") filtered=filtered.filter(function(o){return o.value>=1000;});
+  if(searchTerm){
+    var t=searchTerm.toLowerCase();
+    filtered=filtered.filter(function(o){
+      return o.partId.toLowerCase().indexOf(t)>=0||o.po.po.toLowerCase().indexOf(t)>=0||o.po.vendor.toLowerCase().indexOf(t)>=0||o.part.desc.toLowerCase().indexOf(t)>=0;
+    });
+  }
+  // Sort by days left
+  filtered.sort(function(a,b){return a.daysLeft-b.daysLeft;});
+
+  var html='<h1 class="pt">Orphan Watchlist</h1><p class="ps">Open purchase orders for parts that are no longer on any active BOM</p>';
+
+  html+='<div class="mets">'+
+    mHTML("Total Exposure",fmtMoney(totalExposure),"across "+orphans.length+" orphaned POs","\u{1F4B8}","r",true)+
+    mHTML("Showing",filtered.length+"",(filtered.length===orphans.length?"all":"filtered")+" POs","\u{1F50D}","i")+
+    mHTML("Most Urgent",orphans.length?Math.min.apply(null,orphans.map(function(o){return o.daysLeft;}))+" days":"—","until arrival","\u23F1\uFE0F","a")+
+    mHTML("Vendors Involved",new Set(orphans.map(function(o){return o.po.vendor;})).size+"","to contact","\u{1F3E2}","v")+
+  '</div>';
+
+  html+='<div class="card"><div class="filters">'+
+    '<button class="filter-btn'+(orphanFilter==="all"?" act":"")+'" onclick="setFilter(\'all\')">All Orphans</button>'+
+    '<button class="filter-btn'+(orphanFilter==="urgent"?" act":"")+'" onclick="setFilter(\'urgent\')">Urgent (\u226414 days)</button>'+
+    '<button class="filter-btn'+(orphanFilter==="highval"?" act":"")+'" onclick="setFilter(\'highval\')">High Value (\u2265$1k)</button>'+
+    '<input class="search-box" placeholder="Search part, PO, or vendor..." value="'+searchTerm+'" oninput="setSearch(this.value)">'+
+  '</div>';
+
+  if(filtered.length){
+    html+='<div class="tw"><table><thead><tr>'+
+      '<th>Part</th><th>Description</th><th>PO #</th><th>Vendor</th><th class="r">Qty</th><th class="r">Unit $</th><th class="r">Value</th><th class="c">ETA</th><th class="c">Days Left</th><th class="c">In BOM</th><th class="c">On PO</th><th>Orphaned By</th><th>Action</th>'+
+      '</tr></thead><tbody>';
+    filtered.forEach(function(o){
+      var daysColor=o.daysLeft<=7?"tr":o.daysLeft<=21?"ta":"tm";
+      var urgentCls=o.daysLeft<=14?"urgent":"orphan";
+      var causeHtml=o.cause?
+        '<div class="mono" style="font-size:10px">'+o.cause.eco+'</div><div class="tm" style="font-size:10px">'+PROJECTS[o.cause.proj].name.substring(0,22)+' '+o.cause.oldRev+'\u2192'+o.cause.newRev+'</div>':
+        '<span class="tm">—</span>';
+      var inBomHtml=o.cause&&o.cause.daysInBOM!=null?
+        '<div class="fw tm">'+o.cause.daysInBOM+'d</div><div class="tm" style="font-size:9px">'+dateShort(o.cause.introducedDate)+'\u2192'+dateShort(o.cause.removedDate)+'</div>':
+        '<span class="tm">—</span>';
+      var onPoHtml='<div class="fw tm">'+o.daysSinceOrdered+'d</div><div class="tm" style="font-size:9px">ord '+dateShort(o.po.ordered)+'</div>';
+      html+='<tr class="'+urgentCls+'">'+
+        '<td class="fw mono">'+o.partId+'</td>'+
+        '<td style="font-size:11px">'+o.part.desc+'</td>'+
+        '<td class="mono">'+o.po.po+'</td>'+
+        '<td>'+o.po.vendor+'</td>'+
+        '<td class="r">'+fmt(o.po.qty)+'</td>'+
+        '<td class="r">'+fmtMoney2(o.part.cost)+'</td>'+
+        '<td class="r fw tr">'+fmtMoney(o.value)+'</td>'+
+        '<td class="c">'+dateShort(o.po.eta)+'</td>'+
+        '<td class="c fw '+daysColor+'">'+o.daysLeft+'d</td>'+
+        '<td class="c">'+inBomHtml+'</td>'+
+        '<td class="c">'+onPoHtml+'</td>'+
+        '<td>'+causeHtml+'</td>'+
+        '<td><span class="act-link">\u260E Contact '+o.po.vendor+'</span><div class="tm" style="font-size:10px">to cancel PO</div></td>'+
+      '</tr>';
+    });
+    html+='</tbody></table></div>';
+  }else{
+    html+='<div class="empty">No orphans match the current filter \u2705</div>';
+  }
+  html+='</div>';
+
+  // Exposure timeline
+  html+='<div class="card"><div class="card-t">Orphan Exposure Timeline — when does the material land?</div><div class="cw"><canvas id="c1"></canvas></div></div>';
+
+  document.getElementById("content").innerHTML=html;
+
+  // Build timeline
+  var byWeek={};
+  orphans.forEach(function(o){
+    var eta=new Date(o.po.eta);
+    var weekKey=dateShort(o.po.eta);
+    if(!byWeek[weekKey]){byWeek[weekKey]={val:0,sort:eta.getTime()};}
+    byWeek[weekKey].val+=o.value;
+  });
+  var sorted=Object.keys(byWeek).sort(function(a,b){return byWeek[a].sort-byWeek[b].sort;});
+  CI.c1=new Chart(document.getElementById("c1"),{type:"bar",data:{labels:sorted,datasets:[{label:"Exposure arriving",data:sorted.map(function(k){return byWeek[k].val;}),backgroundColor:"rgba(239,68,68,0.6)",borderColor:"#ef4444",borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#9ca3af"}}},scales:{x:{grid:{color:"#1f2937"},ticks:{color:"#9ca3af"}},y:{grid:{color:"#1f2937"},ticks:{color:"#9ca3af",callback:function(v){return "$"+v;}}}}}});
+}
+
+function renderChanges(){
+  var diffs=computeBomDiffs();
+  var classified=classifyPOs();
+  var orphans=classified.filter(function(c){return c.status==="orphan";});
+
+  var html='<h1 class="pt">BOM Change Log</h1><p class="ps">Every BOM revision across all projects, newest first, with orphan impact</p>';
+
+  html+='<div class="mets">'+
+    mHTML("Total Revisions",diffs.length+"",'across '+Object.keys(PROJECTS).length+' projects',"\u{1F4DD}","i")+
+    mHTML("Active Projects",Object.keys(PROJECTS).length+"","in planning horizon","\u{1F4CB}","v")+
+    mHTML("Orphans Created",orphans.length+"",'from BOM changes',"\u{1F6A8}","r",orphans.length>0)+
+    mHTML("Parts Tracked",Object.keys(PARTS).length+"",'in master data',"\u{1F50C}","e")+
+  '</div>';
+
+  diffs.forEach(function(d){
+    var proj=PROJECTS[d.proj];
+    var statusBadge=d.status==="active"?'<span class="b bg">ACTIVE</span>':'<span class="b bgy">ARCHIVED</span>';
+
+    // Which orphans can we attribute to this change?
+    var myOrphans=orphans.filter(function(o){return o.cause&&o.cause.proj===d.proj&&o.cause.newRev===d.to;});
+    var exposureHere=myOrphans.reduce(function(a,o){return a+o.value;},0);
+
+    html+='<div class="card"><div class="change-head"><div>'+
+      '<div class="change-title">'+proj.name+' &mdash; Rev '+d.from+' \u2192 Rev '+d.to+' '+statusBadge+'</div>'+
+      '<div class="change-meta">'+d.eco+' \u00B7 '+d.eng+' \u00B7 '+dateLong(d.date)+'</div>'+
+      '<div style="font-size:12px;color:#9ca3af;margin-top:6px;font-style:italic">"'+d.reason+'"</div>'+
+    '</div>';
+    if(exposureHere>0){
+      html+='<div style="text-align:right"><div class="b br">'+myOrphans.length+' ORPHAN POS</div><div class="fw tr" style="font-size:16px;margin-top:4px">'+fmtMoney(exposureHere)+'</div><div class="tm" style="font-size:10px">at risk</div></div>';
+    }
+    html+='</div>';
+
+    html+='<div class="diff-list">';
+    d.added.forEach(function(a){html+='<div class="diff-add"><span class="diff-ico">+</span>ADD '+a.p+' (qty '+a.q+') &mdash; '+PARTS[a.p].desc+'</div>';});
+    d.removed.forEach(function(r){
+      var hasOrphanPO=myOrphans.find(function(o){return o.partId===r.p;});
+      var warn=hasOrphanPO?' <span class="b br">\u26A0 PO IN FLIGHT</span>':'';
+      html+='<div class="diff-rem"><span class="diff-ico">\u2212</span>REMOVE '+r.p+' (was qty '+r.q+') &mdash; '+PARTS[r.p].desc+warn+'</div>';
+    });
+    d.changed.forEach(function(c){html+='<div class="diff-chg"><span class="diff-ico">~</span>CHANGE '+c.p+' qty '+c.old+' \u2192 '+c.nw+' &mdash; '+PARTS[c.p].desc+'</div>';});
+    html+='</div>';
+
+    // List any orphan POs with details
+    if(myOrphans.length){
+      html+='<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border2)"><div style="font-size:11px;color:#f87171;font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Orphaned POs Resulting From This Change</div>';
+      html+='<div class="tw"><table><thead><tr><th>PO</th><th>Part</th><th>Vendor</th><th class="r">Qty</th><th class="r">Value</th><th class="c">ETA</th><th class="c">On PO</th><th>Action</th></tr></thead><tbody>';
+      myOrphans.forEach(function(o){
+        html+='<tr class="orphan"><td class="mono">'+o.po.po+'</td><td class="mono">'+o.partId+'</td><td>'+o.po.vendor+'</td><td class="r">'+fmt(o.po.qty)+'</td><td class="r fw tr">'+fmtMoney(o.value)+'</td><td class="c">'+dateShort(o.po.eta)+'</td><td class="c tm">'+o.daysSinceOrdered+'d</td><td><span class="act-link">\u260E Contact vendor</span></td></tr>';
+      });
+      html+='</tbody></table></div></div>';
+    }
+    html+='</div>';
+  });
+
+  document.getElementById("content").innerHTML=html;
+}
+
+function renderParts(){
+  var demand=computeDemand();
+  var classified=classifyPOs();
+  var poByPart={};
+  classified.forEach(function(c){if(!poByPart[c.partId])poByPart[c.partId]=[];poByPart[c.partId].push(c);});
+
+  var html='<h1 class="pt">Part Explorer</h1><p class="ps">Master parts list with demand signal and PO status</p>';
+
+  // Filter to non-zero relevance: parts with demand OR open POs
+  var relevantParts=Object.keys(PARTS).filter(function(p){
+    return (demand[p]&&demand[p].total>0)||poByPart[p];
+  });
+
+  html+='<div class="card"><div class="card-t">All Tracked Parts ('+relevantParts.length+')</div>';
+  html+='<div class="tw"><table><thead><tr>'+
+    '<th>Part ID</th><th>Description</th><th>Category</th><th>Vendor</th><th class="r">Unit $</th><th class="r">Lead (d)</th><th class="r">Demand (3mo)</th><th class="c">Open POs</th><th class="c">Status</th>'+
+    '</tr></thead><tbody>';
+
+  relevantParts.sort(function(a,b){
+    var orphA=poByPart[a]&&poByPart[a].some(function(x){return x.status==="orphan";})?0:1;
+    var orphB=poByPart[b]&&poByPart[b].some(function(x){return x.status==="orphan";})?0:1;
+    if(orphA!==orphB) return orphA-orphB;
+    return a.localeCompare(b);
+  });
+
+  relevantParts.forEach(function(p){
+    var part=PARTS[p];
+    var d=demand[p]||{total:0};
+    var pos=poByPart[p]||[];
+    var hasOrphan=pos.some(function(x){return x.status==="orphan";});
+    var statusBadge;
+    if(d.total===0&&pos.length>0) statusBadge='<span class="b br">ORPHAN</span>';
+    else if(d.total>0) statusBadge='<span class="b bg">ACTIVE</span>';
+    else statusBadge='<span class="b bgy">UNUSED</span>';
+    html+='<tr'+(hasOrphan?' class="orphan"':'')+'>'+
+      '<td class="fw mono">'+p+'</td>'+
+      '<td style="font-size:11px">'+part.desc+'</td>'+
+      '<td><span class="b bi">'+part.cat+'</span></td>'+
+      '<td>'+part.vendor+'</td>'+
+      '<td class="r">'+fmtMoney2(part.cost)+'</td>'+
+      '<td class="r tm">'+part.lead+'</td>'+
+      '<td class="r fw '+(d.total>0?"tg":"tr")+'">'+fmt(d.total)+'</td>'+
+      '<td class="c">'+pos.length+'</td>'+
+      '<td class="c">'+statusBadge+'</td>'+
+    '</tr>';
+  });
+  html+='</tbody></table></div></div>';
+
+  document.getElementById("content").innerHTML=html;
+}
+
+// ───────────────────────────────────────────────────────────────────────
+// NAVIGATION
+// ───────────────────────────────────────────────────────────────────────
+
+function setView(v){view=v;orphanFilter="all";searchTerm="";render();}
+function setFilter(f){orphanFilter=f;render();}
+function setSearch(s){searchTerm=s;
+  // Only re-render table body, but simplest is full re-render (input stays focused via value attribute + requestAnimationFrame)
+  var scrollY=window.scrollY;render();window.scrollTo(0,scrollY);
+  var inp=document.querySelector('.search-box');if(inp){inp.focus();var l=inp.value.length;inp.setSelectionRange(l,l);}
+}
+
+function render(){
+  destroyCharts();
+  // Update nav
+  document.getElementById("nav").innerHTML='<div class="sb-sec">Views</div>'+VIEWS.map(function(v){
+    return '<button class="nb'+(view===v.id?" act":"")+'" onclick="setView(\''+v.id+'\')"><span class="nb-icon">'+v.icon+'</span>'+v.label+'</button>';
+  }).join("");
+  if(view==="dashboard") renderDashboard();
+  else if(view==="orphans") renderOrphans();
+  else if(view==="changes") renderChanges();
+  else if(view==="parts") renderParts();
+}
+
+render();
+</script>
+</body>
+</html>
