@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Promotion Case</title>
+<style>
+  /* =====================================================
+     DESIGN TOKENS
+     ===================================================== */
+  :root {
+    --bg: #14110F;
+    --bg-elev: #1A1714;
+    --bg-row: #1E1A16;
+    --text: #F5F0E8;
+    --text-soft: #C8BDB0;
+    --text-dim: #8A8378;
+    --text-faint: #5A5147;
+    --accent: #C97B4A;
+    --accent-dim: #A8643B;
+    --line: #2A241F;
+    --line-strong: #3A3128;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Helvetica, system-ui, sans-serif;
+    --maxw: 760px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); }
+  body {
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* =====================================================
+     SCREEN — INTERACTIVE FORM
+     ===================================================== */
+  .container { max-width: var(--maxw); margin: 0 auto; padding: 48px 32px 160px; }
+
+  .topbar { display: flex; gap: 24px; justify-content: flex-end; margin-bottom: 56px; }
+  .topbar button {
+    background: none; border: none; color: var(--text-dim);
+    font: inherit; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    cursor: pointer; padding: 4px 0; transition: color 0.15s;
+  }
+  .topbar button:hover { color: var(--text); }
+
+  .hero { margin-bottom: 72px; }
+  .eyebrow {
+    color: var(--text-dim); font-size: 11px;
+    letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: 52px; font-weight: 700; line-height: 1.02;
+    letter-spacing: -0.025em; margin: 0 0 20px;
+  }
+  .hero p { color: var(--text-dim); font-size: 16px; max-width: 560px; margin: 0; }
+
+  .block { margin-bottom: 56px; padding-top: 40px; border-top: 1px solid var(--line); }
+  .block-label {
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 24px;
+  }
+
+  .level-options { display: grid; gap: 12px; }
+  .level-option {
+    display: flex; align-items: center; gap: 16px;
+    padding: 22px 24px; background: var(--bg-elev);
+    border: 1px solid var(--line); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .level-option:hover { border-color: var(--line-strong); }
+  .level-option.active { border-color: var(--accent); background: var(--bg-row); }
+  .level-option .num { font-size: 13px; color: var(--text-dim); letter-spacing: 0.04em; font-weight: 500; }
+  .level-option.active .num { color: var(--accent); }
+  .level-option .name { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+
+  .master-grid { display: grid; gap: 20px; }
+  .field { display: flex; flex-direction: column; }
+  .field-label {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 10px;
+  }
+  .field input, .field textarea {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    color: var(--text); font: inherit; font-size: 15px;
+    padding: 14px 16px; border-radius: 0; outline: none;
+    transition: border-color 0.15s;
+  }
+  .field input:focus, .field textarea:focus { border-color: var(--accent); }
+
+  .section { margin-top: 88px; padding-top: 48px; border-top: 1px solid var(--line); }
+  .section-head { display: flex; align-items: baseline; gap: 28px; margin-bottom: 32px; }
+  .section-num {
+    font-size: 80px; font-weight: 700; line-height: 0.9;
+    color: var(--accent); letter-spacing: -0.04em;
+  }
+  .section-name {
+    font-size: 26px; font-weight: 600; line-height: 1.15;
+    letter-spacing: -0.015em; flex: 1;
+  }
+
+  .sub { padding: 22px 0; border-top: 1px solid var(--line); }
+  .sub:last-child { border-bottom: 1px solid var(--line); }
+  .sub-head { display: flex; align-items: flex-start; gap: 14px; cursor: pointer; user-select: none; }
+  .checkbox {
+    flex-shrink: 0; width: 20px; height: 20px;
+    border: 1px solid var(--line-strong); background: var(--bg-elev);
+    margin-top: 2px; cursor: pointer; position: relative; transition: all 0.15s;
+  }
+  .checkbox:hover { border-color: var(--accent); }
+  .checkbox.checked { background: var(--accent); border-color: var(--accent); }
+  .checkbox.checked::after {
+    content: ''; position: absolute; left: 6px; top: 2px;
+    width: 5px; height: 11px; border: solid var(--bg);
+    border-width: 0 2px 2px 0; transform: rotate(45deg);
+  }
+  .sub-label { font-size: 15px; line-height: 1.5; flex: 1; }
+  .sub-fields { margin-top: 16px; margin-left: 34px; display: grid; gap: 14px; }
+  .sub-comment {
+    width: 100%; background: var(--bg-elev); border: 1px solid var(--line);
+    color: var(--text); font: inherit; font-size: 14px;
+    padding: 12px 14px; outline: none; resize: vertical; min-height: 64px;
+    transition: border-color 0.15s;
+  }
+  .sub-comment:focus { border-color: var(--accent); }
+
+  .upload {
+    display: block; border: 1px dashed var(--line-strong); background: transparent;
+    padding: 18px 16px; cursor: pointer; transition: all 0.15s;
+  }
+  .upload:hover { border-color: var(--accent); background: var(--bg-elev); }
+  .upload-text { font-size: 13px; color: var(--text); margin-bottom: 4px; }
+  .upload-text .plus { color: var(--accent); margin-right: 6px; font-weight: 700; }
+  .upload-hint { font-size: 11px; color: var(--text-faint); line-height: 1.5; }
+  .upload input { display: none; }
+
+  .thumbs {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px;
+  }
+  .thumb {
+    position: relative; aspect-ratio: 1; background: var(--bg-elev);
+    border: 1px solid var(--line); overflow: hidden;
+  }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumb-fallback {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 6px; text-align: center; color: var(--text-dim);
+    font-size: 9px; line-height: 1.3; word-break: break-word;
+  }
+  .thumb-fallback .ext { font-weight: 700; font-size: 11px; color: var(--text); margin-bottom: 4px; letter-spacing: 0.06em; }
+  .thumb-remove {
+    position: absolute; top: 4px; right: 4px;
+    width: 20px; height: 20px; background: rgba(20, 17, 15, 0.85);
+    border: 1px solid var(--line); color: var(--text);
+    font-size: 14px; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0; transition: background 0.15s;
+  }
+  .thumb-remove:hover { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .thumb-processing {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(20, 17, 15, 0.6); font-size: 10px; color: var(--text-dim);
+  }
+
+  .actions {
+    margin-top: 96px; padding-top: 56px; border-top: 1px solid var(--line);
+    display: flex; flex-direction: column; gap: 24px; align-items: stretch;
+  }
+  .actions-row { display: flex; align-items: center; gap: 16px; }
+  .progress {
+    color: var(--text-faint); font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    margin-right: auto;
+  }
+  .btn-primary {
+    background: var(--accent); color: var(--bg); border: none;
+    padding: 18px 36px; font: inherit; font-weight: 700; font-size: 12px;
+    letter-spacing: 0.18em; text-transform: uppercase; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-primary:hover { background: var(--accent-dim); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .print-tip {
+    font-size: 11px; line-height: 1.6; color: var(--text-faint);
+    border-left: 1px solid var(--line-strong); padding: 4px 0 4px 16px;
+  }
+  .print-tip strong { color: var(--text-dim); font-weight: 600; }
+
+  .toast {
+    position: fixed; bottom: 32px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--bg-elev); color: var(--text);
+    border: 1px solid var(--line-strong);
+    padding: 14px 24px; font-size: 13px; letter-spacing: 0.04em;
+    opacity: 0; pointer-events: none; transition: all 0.25s; z-index: 100;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* hide print-view on screen */
+  .print-view { display: none; }
+
+  /* =====================================================
+     PRINT — 16:9 SLIDES TO PDF
+     ===================================================== */
+  @page {
+    size: 13.333in 7.5in;
+    margin: 0;
+  }
+
+  @media print {
+    html, body {
+      background: #14110F !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    body * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .container, .toast { display: none !important; }
+    .print-view { display: block !important; }
+
+    .slide {
+      width: 13.333in;
+      height: 7.5in;
+      padding: 0.55in 0.6in 0.5in;
+      box-sizing: border-box;
+      page-break-after: always;
+      break-after: page;
+      page-break-inside: avoid;
+      overflow: hidden;
+      position: relative;
+      background: #14110F;
+      color: #F5F0E8;
+      font-family: var(--font);
+    }
+    .slide:last-child { page-break-after: auto; }
+
+    /* cover */
+    .cover { display: flex; flex-direction: column; justify-content: center; }
+    .cover-meta {
+      font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: #8A8378; margin-bottom: 14px;
+    }
+    .cover-level {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.18em;
+      text-transform: uppercase; color: #C97B4A; margin-bottom: 64px;
+    }
+    .cover-name {
+      font-size: 92px; font-weight: 700; line-height: 0.95;
+      letter-spacing: -0.025em; color: #F5F0E8; margin-bottom: 24px;
+    }
+    .cover-sub { font-size: 22px; color: #8A8378; line-height: 1.4; }
+    .cover-date {
+      position: absolute; bottom: 0.5in; left: 0.6in; right: 0.6in;
+      padding-top: 12px; border-top: 1px solid #2A241F;
+      font-size: 9px; letter-spacing: 0.18em; color: #5A5147; text-transform: uppercase;
+    }
+
+    /* section slide */
+    .section-slide .slide-num {
+      font-size: 100px; font-weight: 700; line-height: 0.9;
+      color: #C97B4A; letter-spacing: -0.04em;
+      position: absolute; top: 0.5in; left: 0.6in;
+    }
+    .section-slide .slide-header {
+      margin-left: 1.65in; padding-top: 0.05in;
+      min-height: 1in;
+    }
+    .slide-title {
+      font-size: 28px; font-weight: 700; line-height: 1.1;
+      letter-spacing: -0.015em;
+    }
+    .slide-eyebrow {
+      font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: #8A8378; margin-top: 10px;
+    }
+    .slide-table {
+      margin-top: 0.45in; width: 100%;
+      border-collapse: collapse; table-layout: fixed;
+    }
+    .slide-table th {
+      font-size: 8px; font-weight: 500; letter-spacing: 0.18em;
+      text-transform: uppercase; color: #8A8378;
+      text-align: left; padding: 0 12px 10px 0;
+      border-bottom: 1px solid #3A3128;
+    }
+    .slide-table td {
+      vertical-align: top;
+      padding: 13px 12px 13px 0;
+      border-bottom: 1px solid #2A241F;
+      font-size: 12px; line-height: 1.45;
+    }
+    .col-name { width: 30%; padding-left: 0; color: #F5F0E8; }
+    .col-comment { width: 42%; color: #C8BDB0; }
+    .col-evidence { width: 28%; padding-right: 0; }
+    .col-name-cell { display: flex; align-items: flex-start; gap: 9px; }
+    .pcb {
+      flex-shrink: 0; display: inline-block;
+      width: 11px; height: 11px;
+      border: 1px solid #3A3128; background: transparent;
+      margin-top: 2px; position: relative;
+    }
+    .pcb-checked {
+      background: #C97B4A; border-color: #C97B4A;
+    }
+    .pcb-checked::after {
+      content: ''; position: absolute;
+      left: 3px; top: 0px; width: 3.5px; height: 7px;
+      border: solid #14110F; border-width: 0 1.5px 1.5px 0;
+      transform: rotate(45deg);
+    }
+    .ev-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;
+    }
+    .ev-grid img {
+      width: 100%; aspect-ratio: 1; object-fit: cover; display: block;
+      border: 1px solid #2A241F; background: #1E1A16;
+    }
+    .ev-tile {
+      width: 100%; aspect-ratio: 1; border: 1px solid #2A241F;
+      background: #1E1A16; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 4px;
+      text-align: center; box-sizing: border-box;
+    }
+    .ev-tile .ev-ext {
+      font-size: 11px; font-weight: 700; color: #F5F0E8;
+      letter-spacing: 0.06em;
+    }
+    .ev-tile .ev-name {
+      font-size: 7px; color: #8A8378; margin-top: 3px;
+      line-height: 1.2; word-break: break-all;
+      max-width: 100%; overflow: hidden;
+    }
+    .dash { color: #5A5147; }
+    .slide-footer {
+      position: absolute;
+      bottom: 0.4in; left: 0.6in; right: 0.6in;
+      padding-top: 10px; border-top: 1px solid #2A241F;
+      font-size: 8px; letter-spacing: 0.16em;
+      color: #5A5147; text-transform: uppercase;
+      display: flex; justify-content: space-between;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header class="topbar">
+    <button id="exportProgressBtn">Export progress</button>
+    <button id="importProgressBtn">Import progress</button>
+    <input type="file" id="importFile" accept="application/json" style="display:none" />
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">Promotion Case</div>
+    <h1>Make the case for your next level.</h1>
+    <p>Document where you stand against the criteria, attach evidence, then export a presentation-ready file for your review conversation.</p>
+  </section>
+
+  <section class="block">
+    <div class="block-label">Target level</div>
+    <div class="level-options" id="levelOptions"></div>
+  </section>
+
+  <section class="block">
+    <div class="block-label">Your details</div>
+    <div class="master-grid">
+      <div class="field">
+        <div class="field-label">Name</div>
+        <input id="m-name" type="text" autocomplete="off" />
+      </div>
+      <div class="field">
+        <div class="field-label">Role</div>
+        <input id="m-role" type="text" autocomplete="off" />
+      </div>
+      <div class="field">
+        <div class="field-label">Store / Location</div>
+        <input id="m-store" type="text" autocomplete="off" />
+      </div>
+    </div>
+  </section>
+
+  <div id="sections"></div>
+
+  <div class="actions">
+    <div class="actions-row">
+      <div class="progress" id="progressText"></div>
+      <button class="btn-primary" id="exportPdfBtn">Convert to PPT</button>
+    </div>
+    <div class="print-tip">
+      Opens your browser's print dialog. Choose <strong>Save as PDF</strong> as the destination, set <strong>Layout: Landscape</strong>, set <strong>Margins: None</strong>, and turn on <strong>Background graphics</strong> for the dark theme. Then click Save.
+    </div>
+  </div>
+</div>
+
+<div class="print-view" id="printView" aria-hidden="true"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ============================================================
+  // CONTENT — edit LEVELS to change levels / sections / subsections
+  // ============================================================
+  const LEVELS = {
+    'barista-store-manager': {
+      label: 'Barista → Store Manager',
+      sections: [
+        { name: 'Tenure & Certification', subsections: [
+          '6+ months active with hours met',
+          'Online barista certification (Tier 2 or equivalent)'
+        ]},
+        { name: 'Machine & Product', subsections: [
+          'Operates and calibrates LAP automated espresso machines daily',
+          'Performs routine cleaning, descaling, basic fault diagnosis',
+          'Full menu fluency (protein brew, matcha-collagen, plant-based)',
+          'Hits drink prep speed target during peak'
+        ]},
+        { name: 'App & POS Flow', subsections: [
+          'Manages dual queue (walk-in + app pre-order) without bottleneck',
+          'Troubleshoots Apple/Google Wallet, stamp card, QR, POS reconciliation',
+          'Onboards new app users; explains the 6+1 loyalty mechanic'
+        ]},
+        { name: 'Operations', subsections: [
+          '60+ days solo open/close with no incidents',
+          'Owned inventory counts and supplier order cycles',
+          'Daily cash/app/wallet reconciliation clean',
+          'Waste within store target'
+        ]},
+        { name: 'People', subsections: [
+          'Trained 2+ new baristas end-to-end',
+          'Acted as shift lead during peak rush',
+          'Peer 360: 80%+ positive'
+        ]},
+        { name: 'Kiez & Community', subsections: [
+          'Co-organized at least one Kiez activation (run club, sober rave, vintage stand, brand collab)',
+          'Sourced or approached one local partner (Späti, gym, music venue, local brand)',
+          'Handled at least one tense customer/community moment professionally'
+        ]},
+        { name: 'Language', subsections: [
+          'German B1+ and conversational English'
+        ]}
+      ]
+    },
+    'store-manager-area-manager': {
+      label: 'Store Manager → Area Manager',
+      sections: [
+        { name: 'Store P&L Performance', subsections: [
+          'AUV target hit 6+ consecutive months',
+          'Labor % within band; COGS variance in tolerance',
+          'Waste trending down QoQ',
+          'Store NPS / Google rating ≥ network median'
+        ]},
+        { name: 'Throughput Volume', subsections: [
+          'App pickup wait time in network top quartile',
+          'Peak-hour drinks-per-hour target hit consistently',
+          'Avoidable machine downtime under monthly threshold',
+          'Plant-based / iced workflow optimized'
+        ]},
+        { name: 'Team Building & Retention', subsections: [
+          'Hired 3+ baristas with 6-month retention',
+          'Promoted 1+ barista to shift lead or senior',
+          'Team tenure above network median',
+          'Ran a successful new-store opening team or major refurb'
+        ]},
+        { name: 'Kiez Programming', subsections: [
+          'Owned full event lifecycle end-to-end: permits, venue, suppliers, marketing, post-event report',
+          'Delivered 4+ Kiez activations in the year (run club, sober rave, brand collab, sampling)',
+          'Locked in 3+ recurring local partner relationships',
+          'Drove measurable lift (app signups, footfall, repeat-visit metric)',
+          'Coordinated at least one cross-store or brand-level collab (e.g., Adidas-tier)'
+        ]},
+        { name: 'Stakeholder & Backlash Management', subsections: [
+          'Navigated a protest, vandalism, or escalated complaint without external escalation',
+          'Built a working relationship with Bezirksamt or local business association',
+          'Handled at least one press or local-media inquiry cleanly',
+          'Documented neighborhood sentiment shift over 6+ months'
+        ]},
+        { name: 'Multi-Store Capability', subsections: [
+          'Covered Area Manager 2+ weeks across 2+ stores',
+          'Ran weekly cadence across stores: P&L review, 1:1s, consistency checks',
+          'Managed supplier/logistics across multi-site delivery cycles'
+        ]},
+        { name: 'Compliance & Site', subsections: [
+          'Lebensmittelüberwachung passed with zero major findings',
+          'Bauamt / Gewerbe / landlord issues handled independently',
+          'Scouted at least one site that progressed in the pipeline'
+        ]},
+        { name: 'Reporting & Tools', subsections: [
+          'Weekly written store summary; monthly P&L commentary',
+          'Used LAP POS and app data to drive at least one operational decision',
+          'Presented to leadership (founders, COO) at least once'
+        ]},
+        { name: 'Language', subsections: [
+          'German C1+; fluent English'
+        ]}
+      ]
+    }
+  };
+
+  // ============================================================
+  // STATE
+  // ============================================================
+  const STORAGE_KEY = 'promo-framework-v2';
+
+  const state = {
+    level: Object.keys(LEVELS)[0],
+    master: { name: '', role: '', store: '' },
+    responses: {}
+  };
+
+  function getResp(level, sIdx, ssIdx) {
+    state.responses[level] = state.responses[level] || {};
+    state.responses[level][sIdx] = state.responses[level][sIdx] || {};
+    if (!state.responses[level][sIdx][ssIdx]) {
+      state.responses[level][sIdx][ssIdx] = { checked: false, comment: '', files: [] };
+    }
+    return state.responses[level][sIdx][ssIdx];
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      console.warn('Storage save failed:', e);
+      toast('Storage full — large evidence files may not persist');
+    }
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const loaded = JSON.parse(raw);
+      if (loaded && typeof loaded === 'object') {
+        if (loaded.level && LEVELS[loaded.level]) state.level = loaded.level;
+        if (loaded.master) Object.assign(state.master, loaded.master);
+        if (loaded.responses) state.responses = loaded.responses;
+      }
+    } catch (e) { console.warn('Storage load failed:', e); }
+  }
+
+  // ============================================================
+  // FILE PROCESSING (images compressed; everything else as labeled tile)
+  // ============================================================
+  function readAsDataURL(file) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(r.result);
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+  }
+
+  function compressImage(dataUrl, maxDim, quality) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if (Math.max(w, h) > maxDim) {
+          if (w >= h) { h = h * (maxDim / w); w = maxDim; }
+          else { w = w * (maxDim / h); h = maxDim; }
+        }
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(c.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
+    });
+  }
+
+  async function processFile(file) {
+    const id = Math.random().toString(36).slice(2);
+    const baseInfo = { id, name: file.name, type: file.type, size: file.size };
+    if (file.type.startsWith('image/')) {
+      try {
+        const raw = await readAsDataURL(file);
+        const compressed = await compressImage(raw, 1400, 0.78);
+        return Object.assign({}, baseInfo, { kind: 'image', dataUrl: compressed });
+      } catch (e) { console.warn('Image processing failed:', e); }
+    }
+    return Object.assign({}, baseInfo, { kind: 'other', dataUrl: null });
+  }
+
+  // ============================================================
+  // RENDER (interactive form)
+  // ============================================================
+  function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function getExt(name) {
+    const parts = (name || '').split('.');
+    return parts.length > 1 ? parts.pop().toUpperCase().slice(0, 4) : 'FILE';
+  }
+
+  function renderLevels() {
+    const host = document.getElementById('levelOptions');
+    host.innerHTML = '';
+    Object.entries(LEVELS).forEach(([key, lvl], i) => {
+      const el = document.createElement('div');
+      el.className = 'level-option' + (state.level === key ? ' active' : '');
+      el.innerHTML =
+        '<div class="num">0' + (i + 1) + '</div>' +
+        '<div class="name">' + escapeHtml(lvl.label) + '</div>';
+      el.addEventListener('click', () => {
+        state.level = key;
+        saveState();
+        renderLevels();
+        renderSections();
+        updateProgress();
+      });
+      host.appendChild(el);
+    });
+  }
+
+  function renderMaster() {
+    document.getElementById('m-name').value = state.master.name || '';
+    document.getElementById('m-role').value = state.master.role || '';
+    document.getElementById('m-store').value = state.master.store || '';
+  }
+
+  function renderSections() {
+    const host = document.getElementById('sections');
+    host.innerHTML = '';
+    const lvl = LEVELS[state.level];
+    if (!lvl) return;
+    lvl.sections.forEach((sec, sIdx) => {
+      const secEl = document.createElement('section');
+      secEl.className = 'section';
+      secEl.innerHTML =
+        '<div class="section-head">' +
+          '<div class="section-num">' + String(sIdx + 1).padStart(2, '0') + '</div>' +
+          '<div class="section-name"></div>' +
+        '</div>' +
+        '<div class="subs"></div>';
+      secEl.querySelector('.section-name').textContent = sec.name;
+      const subsHost = secEl.querySelector('.subs');
+      sec.subsections.forEach((subName, ssIdx) => {
+        const r = getResp(state.level, sIdx, ssIdx);
+        const subEl = document.createElement('div');
+        subEl.className = 'sub';
+        subEl.innerHTML =
+          '<div class="sub-head">' +
+            '<div class="checkbox' + (r.checked ? ' checked' : '') + '"></div>' +
+            '<div class="sub-label"></div>' +
+          '</div>' +
+          '<div class="sub-fields">' +
+            '<textarea class="sub-comment" placeholder="Comment (optional). What did you do, with what impact?"></textarea>' +
+            '<label class="upload">' +
+              '<div class="upload-text"><span class="plus">+</span>Upload evidence</div>' +
+              '<div class="upload-hint">Multiple files OK. Images, PDFs, docs. Email screenshots are fine as proof.</div>' +
+              '<input type="file" multiple accept="image/*,application/pdf,.doc,.docx,.txt" />' +
+            '</label>' +
+            '<div class="thumbs"></div>' +
+          '</div>';
+
+        subEl.querySelector('.sub-label').textContent = subName;
+        subEl.querySelector('textarea').value = r.comment || '';
+
+        const cb = subEl.querySelector('.checkbox');
+        const head = subEl.querySelector('.sub-head');
+        const ta = subEl.querySelector('textarea');
+        const fileInput = subEl.querySelector('input[type=file]');
+        const thumbs = subEl.querySelector('.thumbs');
+
+        head.addEventListener('click', (e) => {
+          if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON') return;
+          r.checked = !r.checked;
+          cb.classList.toggle('checked', r.checked);
+          saveState();
+          updateProgress();
+        });
+
+        ta.addEventListener('input', () => {
+          r.comment = ta.value;
+          saveState();
+        });
+
+        fileInput.addEventListener('change', async (e) => {
+          const files = Array.from(e.target.files || []);
+          fileInput.value = '';
+          for (const f of files) {
+            const placeholder = { id: 'tmp-' + Math.random().toString(36).slice(2), name: f.name, kind: 'processing' };
+            r.files.push(placeholder);
+            renderThumbs(thumbs, r.files);
+            const processed = await processFile(f);
+            const idx = r.files.indexOf(placeholder);
+            if (idx >= 0) r.files[idx] = processed;
+            renderThumbs(thumbs, r.files);
+            saveState();
+          }
+        });
+
+        renderThumbs(thumbs, r.files);
+        subsHost.appendChild(subEl);
+      });
+      secEl.appendChild(subsHost);
+      host.appendChild(secEl);
+    });
+  }
+
+  function renderThumbs(host, files) {
+    host.innerHTML = '';
+    files.forEach((f, idx) => {
+      const t = document.createElement('div');
+      t.className = 'thumb';
+      if (f.kind === 'processing') {
+        t.innerHTML = '<div class="thumb-processing">…</div>';
+      } else if (f.kind === 'image' && f.dataUrl) {
+        const img = document.createElement('img');
+        img.src = f.dataUrl;
+        img.alt = f.name || '';
+        t.appendChild(img);
+      } else {
+        const fb = document.createElement('div');
+        fb.className = 'thumb-fallback';
+        fb.innerHTML = '<div class="ext">' + escapeHtml(getExt(f.name)) + '</div><div>' + escapeHtml((f.name || '').slice(0, 24)) + '</div>';
+        t.appendChild(fb);
+      }
+      const rm = document.createElement('button');
+      rm.className = 'thumb-remove';
+      rm.textContent = '×';
+      rm.title = 'Remove';
+      rm.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        files.splice(idx, 1);
+        renderThumbs(host, files);
+        saveState();
+      });
+      t.appendChild(rm);
+      host.appendChild(t);
+    });
+  }
+
+  function updateProgress() {
+    const lvl = LEVELS[state.level];
+    if (!lvl) return;
+    let total = 0, checked = 0;
+    lvl.sections.forEach((sec, sIdx) => {
+      sec.subsections.forEach((_, ssIdx) => {
+        total++;
+        if (getResp(state.level, sIdx, ssIdx).checked) checked++;
+      });
+    });
+    document.getElementById('progressText').textContent = checked + ' / ' + total + ' checked';
+  }
+
+  // ============================================================
+  // PROGRESS EXPORT / IMPORT (JSON)
+  // ============================================================
+  document.getElementById('exportProgressBtn').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'promotion-case-progress.json';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast('Progress exported');
+  });
+  document.getElementById('importProgressBtn').addEventListener('click', () => {
+    document.getElementById('importFile').click();
+  });
+  document.getElementById('importFile').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const loaded = JSON.parse(text);
+      if (loaded.level && LEVELS[loaded.level]) state.level = loaded.level;
+      if (loaded.master) Object.assign(state.master, loaded.master);
+      if (loaded.responses) state.responses = loaded.responses;
+      saveState();
+      renderLevels();
+      renderMaster();
+      renderSections();
+      updateProgress();
+      toast('Progress imported');
+    } catch (err) {
+      toast('Import failed — invalid file');
+    }
+    e.target.value = '';
+  });
+
+  ['name', 'role', 'store'].forEach((k) => {
+    const el = document.getElementById('m-' + k);
+    el.addEventListener('input', () => {
+      state.master[k] = el.value;
+      saveState();
+    });
+  });
+
+  // ============================================================
+  // PRINT VIEW BUILDER
+  // ============================================================
+  function formatDate() {
+    const d = new Date();
+    return d.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: '2-digit' }).toUpperCase();
+  }
+
+  function evidenceHtml(files) {
+    if (!files || !files.length) return '<span class="dash">—</span>';
+    const items = files.map((f) => {
+      if (f.kind === 'image' && f.dataUrl) {
+        return '<img src="' + f.dataUrl + '" alt="">';
+      }
+      const ext = escapeHtml(getExt(f.name));
+      const truncName = escapeHtml((f.name || '').slice(0, 22));
+      return '<div class="ev-tile"><div class="ev-ext">' + ext + '</div><div class="ev-name">' + truncName + '</div></div>';
+    }).join('');
+    return '<div class="ev-grid">' + items + '</div>';
+  }
+
+  function buildPrintView() {
+    const root = document.getElementById('printView');
+    root.innerHTML = '';
+    const lvl = LEVELS[state.level];
+    const subEyebrow = (state.master.name || '—') + ' · ' + lvl.label;
+
+    // cover
+    const cover = document.createElement('div');
+    cover.className = 'slide cover';
+    const subParts = [state.master.role, state.master.store].filter(Boolean).map(escapeHtml).join(' · ') || '—';
+    cover.innerHTML =
+      '<div class="cover-meta">PROMOTION CASE</div>' +
+      '<div class="cover-level">' + escapeHtml(lvl.label) + '</div>' +
+      '<div class="cover-name">' + escapeHtml(state.master.name || '—') + '</div>' +
+      '<div class="cover-sub">' + subParts + '</div>' +
+      '<div class="cover-date">' + formatDate() + '</div>';
+    root.appendChild(cover);
+
+    // section slides
+    lvl.sections.forEach((sec, sIdx) => {
+      const slide = document.createElement('div');
+      slide.className = 'slide section-slide';
+      const numStr = String(sIdx + 1).padStart(2, '0');
+      const rowsHtml = sec.subsections.map((subName, ssIdx) => {
+        const r = getResp(state.level, sIdx, ssIdx);
+        const cb = '<span class="pcb' + (r.checked ? ' pcb-checked' : '') + '"></span>';
+        const nameCell = '<div class="col-name-cell">' + cb + '<span>' + escapeHtml(subName) + '</span></div>';
+        const commentCell = r.comment ? escapeHtml(r.comment) : '<span class="dash">—</span>';
+        const evidenceCell = evidenceHtml(r.files);
+        return '<tr>' +
+          '<td class="col-name">' + nameCell + '</td>' +
+          '<td class="col-comment">' + commentCell + '</td>' +
+          '<td class="col-evidence">' + evidenceCell + '</td>' +
+        '</tr>';
+      }).join('');
+      slide.innerHTML =
+        '<div class="slide-num">' + numStr + '</div>' +
+        '<div class="slide-header">' +
+          '<div class="slide-title">' + escapeHtml(sec.name) + '</div>' +
+          '<div class="slide-eyebrow">' + escapeHtml(subEyebrow) + '</div>' +
+        '</div>' +
+        '<table class="slide-table">' +
+          '<thead><tr>' +
+            '<th class="col-name">SUBSECTION</th>' +
+            '<th class="col-comment">COMMENT</th>' +
+            '<th class="col-evidence">EVIDENCE</th>' +
+          '</tr></thead>' +
+          '<tbody>' + rowsHtml + '</tbody>' +
+        '</table>' +
+        '<div class="slide-footer">' +
+          '<span>' + numStr + ' / ' + escapeHtml(sec.name).toUpperCase() + '</span>' +
+          '<span>' + formatDate() + '</span>' +
+        '</div>';
+      root.appendChild(slide);
+    });
+  }
+
+  // restore title before printing so PDF default name is meaningful
+  const ORIGINAL_TITLE = document.title;
+  function setPdfTitle() {
+    const name = (state.master.name || 'promotion-case').replace(/\s+/g, '-').toLowerCase();
+    document.title = name + '-promotion-case';
+  }
+  function restoreTitle() {
+    document.title = ORIGINAL_TITLE;
+  }
+
+  document.getElementById('exportPdfBtn').addEventListener('click', () => {
+    buildPrintView();
+    setPdfTitle();
+    // small delay so browser lays out the print view before opening dialog
+    setTimeout(() => {
+      window.print();
+      setTimeout(restoreTitle, 500);
+    }, 30);
+  });
+
+  // ============================================================
+  // TOAST
+  // ============================================================
+  let toastTimer = null;
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  // ============================================================
+  // INIT
+  // ============================================================
+  loadState();
+  renderLevels();
+  renderMaster();
+  renderSections();
+  updateProgress();
+})();
+</script>
+</body>
+</html>
